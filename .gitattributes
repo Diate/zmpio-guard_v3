@@ -1,0 +1,27 @@
+# Anything parsed by a shell or a line-oriented tool ON THE TARGET (PetaLinux
+# rootfs, busybox ash) or on the Linux build VM must never pick up CRLF from a
+# Windows checkout: a stray \r before EOL breaks the shebang and
+# `set -euo pipefail` parsing outright.
+#
+# Deliberately NOT applied to firmware/**/*.{c,h} or common/*: those are
+# compiled by Vitis on Windows and are CRLF-tolerant when cross-compiled with
+# arm-linux-gnueabihf-gcc, so forcing eol=lf there would renormalize a large
+# body of source with no bug behind it.
+
+deploy/petalinux_overlay/*.sh           text eol=lf
+deploy/petalinux_overlay/*.dtsi         text eol=lf
+deploy/petalinux_overlay/*.service      text eol=lf
+deploy/petalinux_overlay/*.rules        text eol=lf
+deploy/petalinux_overlay/zmpio-enable-cpu1-clocks text eol=lf
+deploy/petalinux_overlay/zmpiod.init    text eol=lf
+deploy/petalinux_overlay/zmpiod-supervise text eol=lf
+scripts/*.sh                            text eol=lf
+tools/*.sh                              text eol=lf
+
+# Binary assets, so git never tries to normalize them.
+*.bit      binary
+*.xsa      binary
+*.elf      binary
+*.dcp      binary
+*.png      binary
+*.dat      binary

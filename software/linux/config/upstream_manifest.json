@@ -1,0 +1,35 @@
+{
+  "step": 6,
+  "captured_contract": "docs/PLAN_BUOC_6.md",
+  "_provenance": "Buoc 6 (2026-09-08). Hashes are CRLF-normalized (LF) SHA256 -- see VERIFY_UPSTREAM.ps1's Get-NormalizedSha256 and dsp_host_sim/VERIFY_UPSTREAM.ps1's identical function (same fix, same reason: environment-independent regardless of core.autocrlf). Detects drift in the common/ ABI headers libzmpio/zmpiod/zmpioctl assume without recompiling -- a change here means Buoc 6's build (BUILD_STEP.ps1) and Buoc 1-5's firmware must be rebuilt together.",
+  "baseline_files": [
+    {
+      "path": "common/zmpio_protocol.h",
+      "sha256": "23E681E717AF15B727B53990B7D1F6DB1BAE6AEC86DB4F97AD6C41601971A79B"
+    },
+    {
+      "path": "common/zmpio_ipc_layout.h",
+      "sha256": "51177FFB78D3CB0308BC163C05D9490121FF5568C3A5054E7AA13E5F2BE4F33B"
+    },
+    {
+      "path": "common/zmpio_abi_v3.h",
+      "sha256": "21710D16EBA8D6C59483C1BEDAC51C9B03E51E1C3133D7F78D09BDE0745A58BF"
+    },
+    {
+      "path": "common/zmpio_abi_v3_layout_hash.h",
+      "sha256": "5B3F90A66B63CF8941065EE92D29CE116890058636B9AD57E02D798A17E1B7FB"
+    },
+    {
+      "path": "common/zmpio_doorbell_regs.h",
+      "sha256": "87EBAD49CA720610D7DCB841D4176638C8F3DF38E60536EF89A71CB38EFD6F26"
+    },
+    {
+      "path": "common/zmpio_crc32.h",
+      "sha256": "F440D8F6C57E30318CE980554DD32BDCFD734EEDE8965F58817938EFC952D675"
+    },
+    {
+      "path": "common/zmpio_crc32.c",
+      "sha256": "41CA26170A5028E49C356C0720CF63DB9AAC40F1D68D9F2B27C836F307E7F393"
+    }
+  ]
+}

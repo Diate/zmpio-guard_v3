@@ -1,0 +1,22 @@
+# Buoc 6.2/6.4 (docs/PLAN_BUOC_6.md SS4). Grants the `zmpio` group access to
+# the two generic-UIO devices declared in
+# system-user-openamp-template.dtsi's zmpio_doorbell_0/zmpio_shm overrides,
+# matched by NAME (not enumeration order -- ROADMAP.md BUOC 6 explicitly
+# rejects assuming /dev/uio0 is a particular endpoint, since PL/kernel
+# probe order is not guaranteed stable across boots).
+#
+# Requires the `zmpio` group to exist (created by whichever PetaLinux
+# recipe/rootfs post-process step installs this file -- not yet wired into
+# script1_fast_package.sh, tracked in docs/PLAN_BUOC_6.md T6.4-4).
+#
+# Install to /etc/udev/rules.d/99-zmpio-uio.rules on the target.
+
+SUBSYSTEM=="uio", ATTR{name}=="zmpio-doorbell", GROUP="zmpio", MODE="0660"
+SUBSYSTEM=="uio", ATTR{name}=="zmpio-shm", GROUP="zmpio", MODE="0660"
+
+# Fallback match if this kernel's uio_pdrv_genirq does not honour
+# `linux,uio-name` (see the VERIFY-ON-REAL-TARGET comment on those two
+# nodes in system-user-openamp-template.dtsi) -- name would then default to
+# the devicetree node's own unit-address name instead.
+SUBSYSTEM=="uio", ATTR{name}=="zmpio_doorbell@40002000", GROUP="zmpio", MODE="0660"
+SUBSYSTEM=="uio", ATTR{name}=="zmpio-shm@19000000", GROUP="zmpio", MODE="0660"

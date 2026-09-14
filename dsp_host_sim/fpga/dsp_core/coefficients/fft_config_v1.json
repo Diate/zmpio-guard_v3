@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "fft_size": 128,
+  "input": "detrended acceleration-vector magnitude, Hann Q1.15",
+  "algorithm": "radix-2 decimation-in-time",
+  "twiddle_format": "Q1.15",
+  "rounding": "nearest, ties away from zero",
+  "scale_schedule": [1, 1, 1, 1, 1, 1, 1],
+  "total_scale": "1/128",
+  "used_bins": [1, 25],
+  "bands": [[1, 6], [7, 12], [13, 18], [19, 25]]
+}
+

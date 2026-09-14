@@ -1,0 +1,218 @@
+/*
+ * system-user.dtsi - Zynq-7000 device tree overlay for the CPU0/CPU1 AMP
+ * split.
+ *
+ * - Does not use remoteproc/rpmsg for CPU1 bring-up or IPC.
+ * - Reserves 16 MB at 0x18000000 for CPU1 (app_freertos.bin).
+ * - Disables the CPU1 core node so Linux only manages CPU0.
+ */
+
+/include/ "system-conf.dtsi"
+
+/ {
+    /* maxcpus=1 keeps Linux from ever scheduling onto CPU1. */
+    chosen {
+        bootargs = "console=ttyPS0,115200 earlycon root=/dev/mmcblk0p2 rw rootwait maxcpus=1 clk_ignore_unused";
+    };
+
+    /* Memory owned exclusively by CPU1; Linux must never map or touch it. */
+    reserved-memory {
+        #address-cells = <1>;
+        #size-cells = <1>;
+        ranges;
+
+        cpu1_reserved: cpu1@18000000 {
+            no-map;                     /* Excluded from the kernel's virtual address map */
+            reg = <0x18000000 0x01000000>; /* 16 MB: CPU1 code/data/heap/stack */
+        };
+
+        ipc_shared: shared@19000000 {
+            no-map;
+            reg = <0x19000000 0x00400000>; /* 4 MB shared IPC region in DDR */
+        };
+    };
+};
+
+/* ZMPIO_CPU1_PERIPHERAL_OWNERSHIP: controllers owned by CPU1 FreeRTOS must
+ * not be probed by Linux. */
+&spi0 {
+    status = "disabled";
+};
+
+&axi_iic_0 {
+    status = "disabled";
+};
+
+/*
+ * ZMPIO_CPU1_UART1_OWNERSHIP: PS UART1 (e0001000) is CPU1 FreeRTOS's debug
+ * console (uart1_log.c, EMIO K19/M19 on JP2). It belongs in the same
+ * single-owner list as spi0/axi_iic_0 above; leaving it at the pcw.dtsi
+ * default status="okay" is what made CPU1's log die a few seconds into
+ * every Linux boot.
+ *
+ * Mechanism, measured on the real board (com3/com4 capture 2026-09-09):
+ * Linux binds xuartps to it ("e0001000.serial: ttyPS1 at MMIO 0xe0001000
+ * (irq = 27...)"), nothing ever opens /dev/ttyPS1, so the driver's runtime-PM
+ * autosuspend fires ~3 s after probe and clk_disable_unprepare()s uart1_ref +
+ * uart1_aper. That drops SLCR APER_CLK_CTRL (0xF800012C) bit 21
+ * UART1_CPU_1XCLKACT from 1 to 0 -- ps7_init.c writes 0x017C444D, but
+ * zmpio-clock-init read back 0x0118440C on the Linux boot. With its APB clock
+ * gated, CPU1's XUartPs_SendByte() reads a dead status register (TXFULL never
+ * asserts, so it never blocks) and every byte is silently dropped: the log
+ * goes quiet with no garbage and no backlog, and only comes back if some
+ * process happens to open /dev/ttyPS1 (runtime resume).
+ *
+ * clk_ignore_unused does NOT protect against this -- it only skips the
+ * one-shot clk_disable_unused() late_initcall; a driver that binds and then
+ * gates its own clock through runtime PM is unaffected. Removing the binding
+ * is the fix; the UART1 branch added to zmpio-enable-cpu1-clocks is defense
+ * in depth, not a substitute.
+ */
+&uart1 {
+    status = "disabled";
+};
+
+/* PS I2C0 remains owned by Linux for the SSD1306 userspace HAL. */
+&i2c0 {
+    status = "okay";
+    clock-frequency = <400000>;
+};
+
+/*
+ * Disables the CPU1 core node in Linux. Merged into the root node by NAME,
+ * NOT &cpus: the generated zynq-7000.dtsi's `cpus { ... }` node carries no
+ * label (`cpus:`), so `&cpus` is an unresolvable reference ("Label or path
+ * cpus not found"). A bare `/cpus { ... }` absolute-path fragment outside a
+ * root `/ { ... }` block also fails ("syntax error" at the same spot) --
+ * plain (non-overlay) dtc only merges fragments by name inside `/ { ... }`,
+ * the same mechanism the reserved-memory block above relies on, not a
+ * standalone path-reference form.
+ */
+/ {
+    cpus {
+        cpu@1 {
+            status = "disabled";
+        };
+    };
+};
+
+/*
+ * ZMPIO_CPU1_PL_IP_OWNERSHIP: the same single-owner discipline as
+ * spi0/axi_iic_0 above, applied to the two PL IP
+ * cores that CPU1's fpga_dsp_hal.c is the sole MMIO owner of. pl.dtsi
+ * (auto-generated from the XSA at PetaLinux hw import, labels
+ * zmpio_dsp_ctrl_0 @ 0x40001000 SPI 62 and mmio_axis_bridge_0 @ 0x40000000)
+ * defaults both to status="okay" with no driver claiming their
+ * "xlnx,..." compatible strings -- harmless by itself, but leaves SPI 62
+ * fully exposed to whatever gic_dist_init() does at boot (see the ICDIPTR
+ * doc comment in firmware/app_freertos/src/fpga_dsp_hal.c). Disabling the
+ * node outright, same as spi0/axi_iic_0, is what actually keeps Linux from
+ * ever touching this MMIO or letting a probe attach to it -- forcing the
+ * GIC target register alone (CPU1 side) is defense in depth, not a
+ * substitute for this.
+ */
+&zmpio_dsp_ctrl_0 {
+    status = "disabled";
+};
+
+&mmio_axis_bridge_0 {
+    status = "disabled";
+};
+
+/*
+ * ZMPIO_UIO_NODES: the two generic-UIO endpoints zmpiod owns exclusively.
+ * Each is looked up by the per-uioN "name" attribute under /sys/class/uio,
+ * never by /dev/uioN index -- enumeration order is not guaranteed stable
+ * across boots once both nodes exist.
+ *
+ * uio_pdrv_genirq does not auto-bind: it requires an explicit
+ * uio_pdrv_genirq.of_id=generic-uio on the kernel command line (or the
+ * driver's default of_id set at build time) naming this exact compatible
+ * string, and CONFIG_UIO_PDRV_GENIRQ=y/m in the kernel config.
+ *
+ * Confirmed on the real target:
+ *   for f in /sys/class/uio/uio*; do cat "$f/name"; done
+ * prints exactly "zmpio-doorbell" and "zmpio-shm" (in either order). If
+ * `linux,uio-name` were not honoured by a given kernel's uio_pdrv_genirq
+ * build, both would instead show the node's unit-address name
+ * ("zmpio_doorbell@40002000" / "zmpio-shm@19000000"), and the udev rule that
+ * matches these nodes would need to key on that string (or on
+ * maps/map0/addr) instead.
+ */
+&zmpio_doorbell_0 {
+    compatible = "generic-uio";
+    linux,uio-name = "zmpio-doorbell";
+};
+
+/*
+ * zmpio-shm exposes the SAME physical range as the ipc_shared no-map
+ * reservation above, deliberately: no-map only keeps the kernel's own
+ * linear map and page allocator off this range, it does not stop a separate
+ * platform device's ioremap() of the identical reg -- this is the standard
+ * idiom for handing reserved DDR to a UIO consumer. Not a child of
+ * reserved-memory (no-map children are memory descriptors, not probeable
+ * devices); a plain top-level node instead.
+ *
+ * No `interrupts` property: this endpoint carries no doorbell of its own
+ * (ABI v2/v3 rings + control block are polled after zmpio-doorbell wakes
+ * zmpiod). uio_pdrv_genirq accepts this as UIO_IRQ_NONE.
+ *
+ * Fallback if a kernel's uio_pdrv_genirq ever fails to probe an
+ * interrupt-less node: switch to compatible = "generic-uio-dmem"/
+ * uio_dmem_genirq, or merge this range into zmpio_doorbell_0 as a second reg
+ * entry.
+ */
+/ {
+    zmpio_shm: zmpio-shm@19000000 {
+        compatible = "generic-uio";
+        reg = <0x19000000 0x00400000>;
+        linux,uio-name = "zmpio-shm";
+    };
+};
+
+/*
+ * =================================================================
+ * OTHER PERIPHERALS (left at their defaults)
+ * =================================================================
+ * The following nodes do not need overriding here because they are already
+ * covered by system-conf.dtsi (Vivado-generated) or the base kernel DTSI:
+ *
+ * - &gem0, &gem1 (Ethernet) -- gem0 already status="okay", xlnx,has-mdio=1,
+ *   phy-mode="gmii" in pcw.dtsi (auto-generated from the XSA). RTL8201F does
+ *   not need an explicit compatible/phy-handle child node for the kernel's
+ *   generic PHY/Realtek PHY driver to auto-negotiate over MDIO -- confirmed
+ *   both on the bare-metal lwIP branch (DHCP + ping) and on PetaLinux (ARP,
+ *   bidirectional ping, sshd reachable; see GAP-006 in
+ *   docs/sdd_sad/00_REQUIREMENTS.md).
+ * - &uart0 (UART0, MIO 14/15 -- Linux console ttyPS0). &uart1 is NOT in this
+ *   list: it is CPU1's, and is explicitly disabled above.
+ * - &sdhci0, &sdhci1 (SD Card)
+ * - &i2c0, &i2c1 (I2C)
+ * - &spi0, &spi1 (SPI)
+ * - &qspi (QSPI Flash)
+ * - &clkc (Clock)
+ *
+ * Add any additional custom PL (FPGA) IP nodes below the &cpus override
+ * above.
+ * =================================================================
+ */
+
+/*
+ * ZMPIO_GEM0_FIXED_MAC: pins GEM0 to the same fixed address the bare-metal
+ * lwIP branch (net_lwip.c) already uses, instead of leaving Linux to inherit
+ * a fresh random MAC from U-Boot on every boot. The two branches never run
+ * concurrently on this board (CPU0 runs exactly one of the two OSes at a
+ * time), so there is no risk of an address collision on the network.
+ *
+ * This was originally adopted to test a MAC-filtering/DHCP-reservation
+ * hypothesis for a DHCP lease failure; that hypothesis was ruled out on the
+ * real board (ARP resolved correctly, bidirectional ping and sshd reachable
+ * with 0% loss -- the macb/GEM0 TX/RX path was healthy, and the actual DHCP
+ * failure traced to the host-side test network, not this board or driver;
+ * see GAP-006 in docs/sdd_sad/00_REQUIREMENTS.md). The fixed
+ * local-mac-address is kept regardless, since it is harmless and gives the
+ * board a stable network identity across boots.
+ */
+&gem0 {
+    local-mac-address = [00 0a 35 00 01 02];
+};

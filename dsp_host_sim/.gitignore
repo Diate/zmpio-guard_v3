@@ -1,0 +1,6 @@
+/build/
+/build_direct/
+*.tmp
+!BUILD_STEP.cmd
+!VERIFY_UPSTREAM.cmd
+!VERIFY_STEP.cmd

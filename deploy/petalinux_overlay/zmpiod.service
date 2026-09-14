@@ -1,0 +1,50 @@
+# NOT THE MECHANISM ON THIS TARGET (BUG-036).
+#
+# This project's PetaLinux rootfs runs classic sysvinit -- the real boot log
+# says "INIT: version 3.04 booting" -- so nothing on the target ever reads a
+# systemd unit.  zmpiod is started and respawned by:
+#
+#   /usr/sbin/zmpiod-supervise   (the /etc/inittab respawn entry)
+#   /etc/init.d/zmpiod           (administrative start/stop/status)
+#
+# both installed by install_zmpiod() in script1_fast_package.sh.  This file
+# is kept only for a future image built WITH systemd enabled; if you use it,
+# remove the inittab entry first -- two supervisors would fight over which
+# process holds the UIO endpoints, and exactly one may (REQ-STR-002).
+
+[Unit]
+# Deliberately not gated on a specific dev-uioN.device unit: UIO enumeration
+# order is not guaranteed stable, so this unit must not depend on it.
+# zmpio_open() inside zmpiod.c already retries with a 1s backoff if the UIO
+# nodes are not present yet (PL bitstream not programmed, kernel module not
+# loaded), so ordering only needs to be "reasonably late in boot", not exact.
+Description=zmpiod -- ABI v2/v3 UIO daemon for CPU1 FreeRTOS
+After=local-fs.target sysinit.target
+Wants=local-fs.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/zmpiod
+Restart=on-failure
+RestartSec=1
+# TERM, not KILL: zmpiod's SIGTERM handler unlinks the socket and calls
+# zmpio_close() cleanly. The "kill -9 restart <= 2s" recovery gate is a
+# harsher test than what systemd stop sends by default and is exercised
+# separately (kill -9 directly), not via ExecStop.
+KillSignal=SIGTERM
+TimeoutStopSec=5
+
+# zmpiod is the SOLE owner of the UIO endpoints: never enable more than one
+# instance, and never run a second reader of the ABI v2 TX ring against the
+# same board.
+#
+# NOT YET HARDENED (tracked as future work, not silently assumed done):
+# this unit still runs as root, same as the existing zmpio-clock-init.service
+# in this same overlay. Dropping to an unprivileged User=/Group=zmpio would
+# additionally require a udev rule granting that user read/write on
+# /dev/uioN (see zmpio-uio.rules in this same directory, which only grants
+# group `zmpio` -- root satisfies that trivially, an unprivileged zmpiod
+# user would not without also being added to that group).
+
+[Install]
+WantedBy=multi-user.target

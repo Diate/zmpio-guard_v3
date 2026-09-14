@@ -1,0 +1,123 @@
+#!/bin/sh
+#
+# /etc/init.d/zmpiod -- administrative control for the ZMPIO UIO daemon.
+#
+# Buoc 7.5 T7.5-3 / BUG-036 (docs/TECHNICAL_INTERVIEW_PROBLEM_ANALYSIS.md):
+# this project's PetaLinux rootfs runs classic sysvinit ("INIT: version 3.04
+# booting" in the real boot log), so the systemd unit that used to be the only
+# start mechanism for zmpiod would never have run -- silently, with no error.
+#
+# The actual supervision is an /etc/inittab respawn entry pointing at
+# /usr/sbin/zmpiod-supervise; that is what restarts the daemon within a
+# second of a crash or a kill -9, which no rcS.d symlink can do.  THIS script
+# is the administrative half: it lets an operator (and the HIL scenarios in
+# tools/hil_fault_inject.py) stop the daemon and have it STAY stopped, which
+# a bare respawn entry would otherwise make impossible.
+#
+# The two halves agree through one flag file:
+#
+#   /run/zmpiod.disabled present -> zmpiod-supervise sleeps instead of exec'ing
+#                       absent  -> zmpiod-supervise exec's /usr/bin/zmpiod
+#
+# /run is tmpfs, so "stopped" never survives a reboot -- deliberate: a board
+# that power-cycles must come back streaming, whatever state someone left it
+# in (the 20/20 cold-boot gate depends on exactly that).
+
+DAEMON=/usr/bin/zmpiod
+NAME=zmpiod
+DISABLE_FLAG=/run/zmpiod.disabled
+STOP_TIMEOUT=5
+
+is_running() {
+    pidof "${NAME}" >/dev/null 2>&1
+}
+
+wait_for() {
+    # $1 = "running" | "stopped"; returns 0 as soon as the state is reached.
+    # Whole-second sleeps only: busybox's sleep accepts fractions solely when
+    # built with FANCY_SLEEP, which this rootfs does not guarantee.  Coarse
+    # granularity is fine here -- this is the administrative path, not the
+    # kill -9 recovery path (that one is sysvinit's respawn, measured
+    # separately by the H2 gate).
+    i=0
+    while [ "${i}" -lt "${STOP_TIMEOUT}" ]; do
+        if [ "$1" = "running" ] && is_running; then
+            return 0
+        fi
+        if [ "$1" = "stopped" ] && ! is_running; then
+            return 0
+        fi
+        sleep 1
+        i=$((i + 1))
+    done
+    # One last look: the state may have changed during the final sleep.
+    if [ "$1" = "running" ]; then
+        is_running
+        return $?
+    fi
+    is_running && return 1
+    return 0
+}
+
+case "$1" in
+    start)
+        printf "Starting %s: " "${NAME}"
+        rm -f "${DISABLE_FLAG}"
+        if is_running; then
+            echo "already running"
+            exit 0
+        fi
+        # If inittab supervision is active it will pick the daemon up within
+        # its respawn interval; if this image has no such entry (a bare
+        # rootfs, or a developer running by hand) start it directly so this
+        # script works either way.
+        if grep -q "zmpiod-supervise" /etc/inittab 2>/dev/null; then
+            init q 2>/dev/null || true
+        else
+            "${DAEMON}" &
+        fi
+        if wait_for running; then
+            echo "OK"
+        else
+            echo "FAILED"
+            exit 1
+        fi
+        ;;
+    stop)
+        printf "Stopping %s: " "${NAME}"
+        # Flag FIRST, then signal: the other order races with the respawn and
+        # the daemon comes straight back.
+        touch "${DISABLE_FLAG}"
+        if is_running; then
+            kill "$(pidof ${NAME})" 2>/dev/null || true
+        fi
+        if wait_for stopped; then
+            echo "OK"
+        else
+            kill -9 "$(pidof ${NAME})" 2>/dev/null || true
+            echo "KILLED"
+        fi
+        ;;
+    restart|force-reload)
+        "$0" stop
+        "$0" start
+        ;;
+    status)
+        if is_running; then
+            echo "${NAME} is running (pid $(pidof ${NAME}))"
+            exit 0
+        fi
+        if [ -f "${DISABLE_FLAG}" ]; then
+            echo "${NAME} is stopped (administratively disabled)"
+        else
+            echo "${NAME} is not running"
+        fi
+        exit 3
+        ;;
+    *)
+        echo "usage: $0 {start|stop|restart|status}" >&2
+        exit 2
+        ;;
+esac
+
+exit 0

@@ -1,0 +1,70 @@
+{
+  "name": "platform_dual",
+  "type": "PLATFORM",
+  "configuration": {
+    "description": "",
+    "xsa": "<ZMPIO_ROOT>\\firmware\\platform_dual\\hw\\design_1_wrapper.xsa",
+    "xsaPathInPlatform": "platform_dual\\hw\\design_1_wrapper.xsa",
+    "emulationXsa": "",
+    "emulationXsaPathInPlatform": "",
+    "isCustomFSBL": false,
+    "fsblPath": "",
+    "pmufwElf": "",
+    "flow": "EMBEDDED",
+    "processorsMap": {
+      "ps7_cortexa9_0": "ps7_cortexa9",
+      "ps7_cortexa9_1": "ps7_cortexa9"
+    },
+    "supportedFamily": "zynq",
+    "outOfSync": false,
+    "componentType": "PLATFORM",
+    "domains": [
+      {
+        "name": "zynq_fsbl",
+        "displayName": "zynq_fsbl",
+        "processor": "ps7_cortexa9_0",
+        "cpuType": "cortex-a9",
+        "cpuInstance": "ps7_cortexa9_0",
+        "os": "standalone",
+        "appTemplate": "zynq_fsbl",
+        "isBootDomain": true,
+        "qemuData": "<ZMPIO_ROOT>\\firmware\\platform_dual\\resources\\zynq_fsbl\\qemu",
+        "qemuArgsFile": "<ZMPIO_ROOT>\\firmware\\platform_dual\\resources\\zynq_fsbl\\qemu\\qemu_args.txt",
+        "pmcQemuArgsFile": "",
+        "isBSPGenReq": false
+      },
+      {
+        "name": "standalone_ps7_cortexa9_0",
+        "displayName": "standalone_ps7_cortexa9_0",
+        "processor": "ps7_cortexa9_0",
+        "cpuType": "cortex-a9",
+        "cpuInstance": "ps7_cortexa9_0",
+        "os": "standalone",
+        "appTemplate": "empty_application",
+        "isBootDomain": false,
+        "qemuData": "<ZMPIO_ROOT>\\firmware\\platform_dual\\resources\\standalone_ps7_cortexa9_0\\qemu",
+        "qemuArgsFile": "<ZMPIO_ROOT>\\firmware\\platform_dual\\resources\\standalone_ps7_cortexa9_0\\qemu\\qemu_args.txt",
+        "pmcQemuArgsFile": "",
+        "isBSPGenReq": false
+      },
+      {
+        "name": "free_rtos",
+        "displayName": "free_rtos",
+        "processor": "ps7_cortexa9_1",
+        "cpuType": "cortex-a9",
+        "cpuInstance": "ps7_cortexa9_1",
+        "os": "freertos",
+        "appTemplate": "empty_application",
+        "isBootDomain": false,
+        "qemuData": "<ZMPIO_ROOT>\\firmware\\platform_dual\\resources\\free_rtos\\qemu",
+        "qemuArgsFile": "<ZMPIO_ROOT>\\firmware\\platform_dual\\resources\\free_rtos\\qemu\\qemu_args.txt",
+        "pmcQemuArgsFile": "",
+        "isBSPGenReq": false
+      }
+    ],
+    "emptyToolchainConfiguration": []
+  },
+  "previousBuildStatusMap": {
+    "export": "SUCCESS"
+  }
+}

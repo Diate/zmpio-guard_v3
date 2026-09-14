@@ -1,0 +1,32 @@
+{
+  "step": 1,
+  "captured_contract": "dsp_host_sim/docs/ARCHITECTURE.md",
+  "_hashing_method": "SHA256 over the file content with CRLF normalized to LF (the same bytes git stores in the blob), NOT the raw checked-out file. Without this, the manifest is only reproducible on whatever core.autocrlf setting/OS generated it -- on a Windows checkout with core.autocrlf=true every text file mismatches by line ending alone, which is indistinguishable from a real upstream content change. Regenerate with dsp_host_sim/VERIFY_UPSTREAM.ps1's Get-NormalizedSha256.",
+  "_provenance": "Recaptured 2026-09-12 at V3 closeout (docs/TAT_TOAN_V3.md). Three files had moved on since the 2026-09-08 capture and VERIFY_UPSTREAM reported a mismatch; every diff was reviewed against what Step1's golden vectors actually depend on (raw-to-physical conversion, feature_frame_v2 48-byte layout, ZLOG container bytes) and NONE of them touches it, so this is a manifest update, not a Step1 contract rebase -- Step1's PASS evidence stands unchanged. (1) common/zmpio_protocol.h: purely additive -- MSG_TYPE_FEATURE_V2/DSP_HEALTH/STREAM_STATUS (0x30..0x32) plus the three Buoc 7 wire structs; no existing message type, struct or field changed. (2) firmware/app_freertos/src/app_config.h: two new constants APP_FEATURE_STREAM_SEND_TIMEOUT_MS / _DROP_LOG_INTERVAL; earlier Buoc 3 change APP_RULE_ANOMALY_VERSION 1->2 is a rule threshold recalculated from the labelled board dataset, which is downstream of the DSP contract, not part of it. (3) firmware/app_freertos/src/log_record.h: the ZLOG container definitions (magics, LOG_FORMAT_VERSION, log_source_t, file/record headers, both _Static_asserts) MOVED verbatim to common/zmpio_zlog.h so zmpiod can write the same container without including a firmware header; log_record.h now includes it and keeps only the CPU1-side queue item. Byte layout frozen and still assert-enforced -- captures from Buoc 1/3 parse byte-for-byte. Because the container now lives in common/, common/zmpio_zlog.h is ADDED to baseline_files below: without it the manifest would no longer be able to detect a real ZLOG format change, which is the one thing it exists to catch.",
+  "baseline_files": [
+    {
+      "path": "common/zmpio_protocol.h",
+      "sha256": "44E6BC03D13F5C3E055DF0CCC44ABB09A04BE37E9AA44F60A371B9E53A97CED7"
+    },
+    {
+      "path": "firmware/app_freertos/src/app_config.h",
+      "sha256": "8BB17FA3214939376883E3EEEE8F55688D81B2D0B646116731FD616BDE0189C5"
+    },
+    {
+      "path": "firmware/app_freertos/src/mpu6050.c",
+      "sha256": "78695670FD8AD718DC7B32EC48ECC6CBAE6F4E25FC27362A9004EF75F1A6EBA2"
+    },
+    {
+      "path": "firmware/app_freertos/src/log_record.h",
+      "sha256": "09BF79E7AC0611648906754947BC413BD0989A1920EBF8919BDAA3625FC64716"
+    },
+    {
+      "path": "common/zmpio_zlog.h",
+      "sha256": "20CA25AFF5680125FCB16A3026F7DB5CFBE0B73E048A3F2F029EF1AF0122544A"
+    },
+    {
+      "path": "software/linux/parse_zlog.py",
+      "sha256": "19BBA6EA87A25C69600F97D61356B8159C02C71F5EB17DBEE65A6536C3355054"
+    }
+  ]
+}

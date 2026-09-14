@@ -1,0 +1,80 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          zmpio-clock-init
+# Required-Start:    $local_fs
+# Required-Stop:
+# Default-Start:     S 2 3 4 5
+# Default-Stop:
+# Short-Description: Keep Zynq SPI0/UART1 clocks enabled for CPU1 FreeRTOS
+### END INIT INFO
+
+set -eu
+
+SLCR_UNLOCK=0xF8000008
+SLCR_LOCK=0xF8000004
+SPI_CLK_CTRL=0xF8000158
+APER_CLK_CTRL=0xF800012C
+SLCR_UNLOCK_KEY=0x0000DF0D
+SLCR_LOCK_KEY=0x0000767B
+SPI_CLKACT_MASK=0x00000001
+SPI0_APER_MASK=0x00004000
+# APER_CLK_CTRL[21] UART1_CPU_1XCLKACT -- CPU1's debug console (uart1_log.c).
+# ps7_init.c writes APER_CLK_CTRL=0x017C444D with this bit set; a Linux boot
+# that still binds xuartps to e0001000 reads back 0x0118440C, i.e. bit 21
+# cleared by the driver's runtime-PM autosuspend, and CPU1's log goes silent.
+# The real fix is status="disabled" on &uart1 in
+# system-user-openamp-template.dtsi; this check exists so that a stale device
+# tree shows up as an explicit ERROR here instead of as a mystery silent UART.
+UART1_APER_MASK=0x00200000
+
+log_message() {
+    echo "zmpio-clock-init: $*"
+    if command -v logger >/dev/null 2>&1; then
+        logger -t zmpio-clock-init "$*" || true
+    fi
+}
+
+DEVMEM_BIN="${DEVMEM_BIN:-$(command -v devmem 2>/dev/null || true)}"
+if [ -z "${DEVMEM_BIN}" ]; then
+    log_message "ERROR: devmem is unavailable; SPI0/UART1 clocks were not checked"
+    exit 1
+fi
+
+spi_clock_value="$(${DEVMEM_BIN} ${SPI_CLK_CTRL} 32)"
+aper_clock_value="$(${DEVMEM_BIN} ${APER_CLK_CTRL} 32)"
+
+if [ $((spi_clock_value & SPI_CLKACT_MASK)) -ne 0 ] && \
+   [ $((aper_clock_value & SPI0_APER_MASK)) -ne 0 ] && \
+   [ $((aper_clock_value & UART1_APER_MASK)) -ne 0 ]; then
+    log_message "SPI0/UART1 clocks already enabled (${spi_clock_value}, ${aper_clock_value})"
+    exit 0
+fi
+
+if [ $((aper_clock_value & UART1_APER_MASK)) -eq 0 ]; then
+    log_message "WARNING: UART1_CPU_1XCLKACT was gated (${aper_clock_value}); a driver is still bound to e0001000 -- check that &uart1 is disabled in the device tree, otherwise it gets gated again after this script runs and CPU1's log goes silent"
+fi
+
+new_spi_clock_value=$((spi_clock_value | SPI_CLKACT_MASK))
+new_aper_clock_value=$((aper_clock_value | SPI0_APER_MASK | UART1_APER_MASK))
+
+# The SLCR must always be locked again, including when a register write fails.
+trap '"${DEVMEM_BIN}" "${SLCR_LOCK}" 32 "${SLCR_LOCK_KEY}" >/dev/null 2>&1 || true' 0 1 2 15
+"${DEVMEM_BIN}" "${SLCR_UNLOCK}" 32 "${SLCR_UNLOCK_KEY}" >/dev/null
+"${DEVMEM_BIN}" "${SPI_CLK_CTRL}" 32 "$(printf '0x%08X' "${new_spi_clock_value}")" >/dev/null
+"${DEVMEM_BIN}" "${APER_CLK_CTRL}" 32 "$(printf '0x%08X' "${new_aper_clock_value}")" >/dev/null
+"${DEVMEM_BIN}" "${SLCR_LOCK}" 32 "${SLCR_LOCK_KEY}" >/dev/null
+trap - 0 1 2 15
+
+spi_clock_value="$(${DEVMEM_BIN} ${SPI_CLK_CTRL} 32)"
+aper_clock_value="$(${DEVMEM_BIN} ${APER_CLK_CTRL} 32)"
+if [ $((spi_clock_value & SPI_CLKACT_MASK)) -eq 0 ] || \
+   [ $((aper_clock_value & SPI0_APER_MASK)) -eq 0 ] || \
+   [ $((aper_clock_value & UART1_APER_MASK)) -eq 0 ]; then
+    log_message "ERROR: SPI0/UART1 clock verification failed (${spi_clock_value}, ${aper_clock_value})"
+    exit 1
+fi
+
+if ! grep -qw clk_ignore_unused /proc/cmdline 2>/dev/null; then
+    log_message "WARNING: clk_ignore_unused is absent; runtime SLCR fallback was required"
+fi
+log_message "SPI0/UART1 clocks enabled (${spi_clock_value}, ${aper_clock_value})"

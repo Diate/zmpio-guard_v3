@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "sample_rate_hz": 100,
+  "tap_count": 16,
+  "format": "Q1.15",
+  "design": "Hamming-windowed sinc, normalized cutoff 0.22 cycles/sample",
+  "target": {
+    "passband_hz": [0, 15],
+    "passband_ripple_db_max": 1.0,
+    "stopband_hz": [35, 50],
+    "stopband_attenuation_db_min": 30.0
+  },
+  "coefficients_q15": [-90, 82, 427, -58, -1742, -995, 5570, 13190, 13190, 5570, -995, -1742, -58, 427, 82, -90],
+  "coefficient_sum": 32768
+}
+

@@ -1,0 +1,51 @@
+#!/bin/sh
+#
+# /usr/sbin/zmpiod-supervise -- the respawn target for /etc/inittab.
+#
+# Buoc 7.5 T7.5-3 / BUG-036.  The inittab entry installed alongside this
+# script is:
+#
+#   zmpd:2345:respawn:/usr/sbin/zmpiod-supervise
+#
+# sysvinit re-runs a `respawn` entry as soon as it exits, which is what makes
+# "kill -9 zmpiod recovers in <= 2 s" true (the Buoc 6.4 / 7.3 H2 gate).  An
+# /etc/rcS.d symlink alone cannot do that -- it starts the daemon once and
+# never looks again.
+#
+# Two jobs beyond exec'ing the daemon:
+#
+#   1. Honour /run/zmpiod.disabled so `/etc/init.d/zmpiod stop` can keep the
+#      daemon down (H1 and H3 both need a genuinely absent consumer for a
+#      minute or more).  While disabled this loops with a 1 s sleep, which
+#      sysvinit is happy with.
+#
+#   2. Refuse to start a SECOND daemon.  Exactly one process may hold the UIO
+#      endpoints and read the ABI v2 TX ring (REQ-STR-002); two readers lose
+#      feature records deterministically.  If sysvinit ever respawns this
+#      while a daemon is somehow still alive, wait rather than race it.
+#
+# sysvinit throttles an entry that exits too often ("respawning too fast"),
+# so every exit path here sleeps at least a second.
+
+DAEMON=/usr/bin/zmpiod
+DISABLE_FLAG=/run/zmpiod.disabled
+
+if [ -f "${DISABLE_FLAG}" ]; then
+    sleep 1
+    exit 0
+fi
+
+if pidof zmpiod >/dev/null 2>&1; then
+    sleep 1
+    exit 0
+fi
+
+if [ ! -x "${DAEMON}" ]; then
+    echo "zmpiod-supervise: ${DAEMON} missing or not executable" >&2
+    sleep 5
+    exit 1
+fi
+
+# exec, not a background start: the daemon becomes this inittab entry's own
+# process, so sysvinit sees its death directly and respawns immediately.
+exec "${DAEMON}"

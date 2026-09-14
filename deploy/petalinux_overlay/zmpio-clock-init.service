@@ -1,0 +1,13 @@
+[Unit]
+Description=Enable Zynq SPI0 clocks for CPU1 FreeRTOS
+DefaultDependencies=no
+After=local-fs.target
+Before=multi-user.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/zmpio-enable-cpu1-clocks
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

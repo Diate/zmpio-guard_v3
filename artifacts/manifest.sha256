@@ -1,0 +1,34 @@
+# ZMPIO Guard V3 release manifest (tools/gen_manifest.py)
+#
+# Every line below identifies one artifact of ONE release candidate.
+# A cold-boot evidence run is only meaningful together with this file:
+# it is what says which bytes were on the card.
+#
+generated_utc: 2026-09-12T01:54:31.179496+00:00
+git_commit: 5a7211ae1209b6b838cb0cd50ffe4eb3a493809c
+git_branch: develop
+git_dirty: no
+
+# ABI constants that CPU1 and Linux must agree on.  Read from the
+# headers at generation time, never transcribed by hand.
+IPC_PROTOCOL_VERSION: 2U
+IPC_STREAM_ABI_VERSION: 1U
+ZMPIO_ABI_V3_LAYOUT_HASH: 0x7CF622B4U
+APP_RULE_ANOMALY_VERSION: 2U
+
+# sha256  size_bytes  role  path
+# MISSING  -  boot/BOOT.BIN  artifacts/BOOT.BIN
+# MISSING  -  boot/image.ub  artifacts/image.ub
+# MISSING  -  boot/boot.scr  artifacts/boot.scr
+# MISSING  -  boot/system.dtb  artifacts/system.dtb
+# MISSING  -  boot/rootfs.tar.gz  artifacts/rootfs.tar.gz
+25e49e68314b2f4f5a34de7a0723523d8ecc25ae105d0c4da05419d92c9903a8  849992  cpu1/app_freertos.elf  output/cpu1/app_freertos.elf
+# MISSING  -  cpu1/app_freertos.bin  output/cpu1/app_freertos.bin
+fa451efd0e07b64eec967ec5e80f4bffbd4ed61687fab8bbdf9f452d465b3c96  4045676  pl/design_1_wrapper.bit  hardware/vivado/project_hub/project_hub.runs/impl_1/design_1_wrapper.bit
+6c665b0ca191203cdb7d4adf9cd0a309f653cecea5a0d00323aa9d02e318355c  744691  pl/design_1_wrapper.xsa  firmware/platform_dual/hw/design_1_wrapper.xsa
+1ef0590688df20db4982b7677346703c4d48b14cdd47b8bf6c5ebbb7b3c85214  80804  linux/zmpiod  output/linux/zmpiod
+8884168d19eaed58546632d0360f3ac0bd25d820b3a29e838cdab3943b142cd1  74900  linux/zmpioctl  output/linux/zmpioctl
+
+# CPU1 ELF load map (T7.5-1): every PT_LOAD must lie inside
+# [0x18000000, 0x19000000).
+# PT_LOAD paddr=0x18000000 memsz=0x3e590 end=0x1803e590 in-range

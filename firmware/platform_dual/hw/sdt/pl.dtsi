@@ -1,0 +1,75 @@
+/ {
+	amba_pl: amba_pl {
+		ranges;
+		compatible = "simple-bus";
+		#address-cells = <1>;
+		#size-cells = <1>;
+		axi_iic_0: axi_iic@43c00000 {
+			interrupts = < 0 29 4 >;
+			xlnx,iic-freq-khz = <100>;
+			compatible = "xlnx,axi-iic-2.1" , "xlnx,xps-iic-2.00.a";
+			xlnx,scl-inertial-delay = <0>;
+			interrupt-parent = <&intc>;
+			xlnx,rable = <0>;
+			xlnx,ip-name = "axi_iic";
+			xlnx,disable-setup-violation-check = <0>;
+			reg = <0x43c00000 0x10000>;
+			clocks = <&clkc 15>;
+			xlnx,gpo-width = <1>;
+			xlnx,edk-iptype = "PERIPHERAL";
+			xlnx,static-timing-reg-width = <0>;
+			xlnx,sda-level = <1>;
+			status = "okay";
+			clock-names = "s_axi_aclk";
+			xlnx,ten-bit-adr = <0>;
+			xlnx,default-value = <0x00>;
+			interrupt-names = "iic2intc_irpt";
+			xlnx,timing-reg-width = <32>;
+			xlnx,iic-board-interface = "Custom";
+			xlnx,iic-freq = <100000>;
+			xlnx,smbus-pmbus-host = <0>;
+			xlnx,sda-inertial-delay = <0>;
+			xlnx,name = "axi_iic_0";
+			xlnx,axi-aclk-freq-mhz = <0x2fadcf8>;
+		};
+		mmio_axis_bridge_0: mmio_axis_bridge@40000000 {
+			xlnx,rable = <0>;
+			compatible = "xlnx,mmio-axis-bridge-1.0";
+			status = "okay";
+			clock-names = "m_axis_aclk" , "s_axi_aclk";
+			xlnx,ip-name = "mmio_axis_bridge";
+			xlnx,edk-iptype = "PERIPHERAL";
+			reg = <0x40000000 0x1000>;
+			clocks = <&clkc 15>, <&clkc 15>;
+			xlnx,name = "mmio_axis_bridge_0";
+		};
+		zmpio_doorbell_0: zmpio_doorbell@40002000 {
+			compatible = "xlnx,zmpio-doorbell-1.0";
+			interrupts = < 0 31 4 >;
+			xlnx,rable = <0>;
+			interrupt-parent = <&intc>;
+			xlnx,ip-name = "zmpio_doorbell";
+			reg = <0x40002000 0x1000>;
+			clocks = <&clkc 15>;
+			xlnx,edk-iptype = "PERIPHERAL";
+			status = "okay";
+			clock-names = "s_axi_aclk";
+			interrupt-names = "irq_out";
+			xlnx,name = "zmpio_doorbell_0";
+		};
+		zmpio_dsp_ctrl_0: zmpio_dsp_ctrl@40001000 {
+			compatible = "xlnx,zmpio-dsp-ctrl-1.0";
+			interrupts = < 0 30 4 >;
+			xlnx,rable = <0>;
+			interrupt-parent = <&intc>;
+			xlnx,ip-name = "zmpio_dsp_ctrl";
+			reg = <0x40001000 0x1000>;
+			clocks = <&clkc 15>, <&clkc 15>;
+			xlnx,edk-iptype = "PERIPHERAL";
+			status = "okay";
+			clock-names = "s_axi_aclk" , "s_axis_aclk";
+			interrupt-names = "irq_out";
+			xlnx,name = "zmpio_dsp_ctrl_0";
+		};
+	};
+};

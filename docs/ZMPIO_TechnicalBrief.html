@@ -1,900 +1,2708 @@
 <!doctype html>
 <html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ZMPIO Guard V3</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ZMPIO Guard V3</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap"
+    />
 
-<style>
-  /* ---------- tokens: light is the base, complete set ---------- */
-  :root {
-    --ground:      #ffffff;
-    --ground-soft: #f4f6f6;
-    --ground-sunk: #eceff0;
-    --ink:         #15181b;
-    --body:        #32383d;
-    --muted:       #6d767c;
-    --rule:        #d7dcde;
-    --rule-strong: #9aa3a8;
-    --accent:      #0d5661;
-    --accent-soft: #e2eef0;
-    --warn:        #8a5a12;
+    <style>
+      /* ---------- tokens: light is the base, complete set ---------- */
+      :root {
+        --ground: #ffffff;
+        --ground-soft: #f4f6f6;
+        --ground-sunk: #eceff0;
+        --ink: #15181b;
+        --body: #32383d;
+        --muted: #6d767c;
+        --rule: #d7dcde;
+        --rule-strong: #9aa3a8;
+        --accent: #0d5661;
+        --accent-soft: #e2eef0;
+        --warn: #8a5a12;
 
-    --serif: "Source Serif 4", Georgia, "Times New Roman", serif;
-    --sans:  "Source Sans 3", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-    --mono:  "IBM Plex Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
-  }
+        --serif: "Source Serif 4", Georgia, "Times New Roman", serif;
+        --sans:
+          "Source Sans 3", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Helvetica, Arial, sans-serif;
+        --mono:
+          "IBM Plex Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
+      }
 
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      --ground:      #101315;
-      --ground-soft: #171b1e;
-      --ground-sunk: #1d2225;
-      --ink:         #eef1f2;
-      --body:        #c3cace;
-      --muted:       #8d979d;
-      --rule:        #2b3236;
-      --rule-strong: #566166;
-      --accent:      #5fc3ce;
-      --accent-soft: #16292d;
-      --warn:        #d6a350;
-    }
-  }
-  :root[data-theme="dark"] {
-    --ground:      #101315;
-    --ground-soft: #171b1e;
-    --ground-sunk: #1d2225;
-    --ink:         #eef1f2;
-    --body:        #c3cace;
-    --muted:       #8d979d;
-    --rule:        #2b3236;
-    --rule-strong: #566166;
-    --accent:      #5fc3ce;
-    --accent-soft: #16292d;
-    --warn:        #d6a350;
-  }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) {
+          --ground: #101315;
+          --ground-soft: #171b1e;
+          --ground-sunk: #1d2225;
+          --ink: #eef1f2;
+          --body: #c3cace;
+          --muted: #8d979d;
+          --rule: #2b3236;
+          --rule-strong: #566166;
+          --accent: #5fc3ce;
+          --accent-soft: #16292d;
+          --warn: #d6a350;
+        }
+      }
+      :root[data-theme="dark"] {
+        --ground: #101315;
+        --ground-soft: #171b1e;
+        --ground-sunk: #1d2225;
+        --ink: #eef1f2;
+        --body: #c3cace;
+        --muted: #8d979d;
+        --rule: #2b3236;
+        --rule-strong: #566166;
+        --accent: #5fc3ce;
+        --accent-soft: #16292d;
+        --warn: #d6a350;
+      }
 
-  /* ---------- page ---------- */
-  body {
-    background: var(--ground);
-    color: var(--body);
-    font-family: var(--sans);
-    font-size: 0.975rem;
-    line-height: 1.58;
-    -webkit-font-smoothing: antialiased;
-  }
+      /* ---------- page ---------- */
+      body {
+        background: var(--ground);
+        color: var(--body);
+        font-family: var(--sans);
+        font-size: 0.975rem;
+        line-height: 1.58;
+        -webkit-font-smoothing: antialiased;
+      }
 
-  .doc {
-    max-width: 900px;
-    margin-inline: auto;
-    padding-inline: 22px;
-    padding-block: 52px 80px;
-    display: flex;
-    flex-direction: column;
-    gap: 40px;
-  }
+      .doc {
+        max-width: 900px;
+        margin-inline: auto;
+        padding-inline: 22px;
+        padding-block: 52px 80px;
+        display: flex;
+        flex-direction: column;
+        gap: 40px;
+      }
 
-  /* ---------- masthead ---------- */
-  .masthead { display: flex; flex-direction: column; gap: 12px; }
-  .eyebrow {
-    font-family: var(--mono);
-    font-size: 0.74rem;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin: 0;
-  }
-  h1 {
-    font-family: var(--serif);
-    font-size: 2.5rem;
-    font-weight: 700;
-    line-height: 1.08;
-    letter-spacing: -0.018em;
-    color: var(--ink);
-    margin: 0;
-    text-wrap: balance;
-  }
-  .standfirst {
-    font-family: var(--serif);
-    font-size: 1.12rem;
-    line-height: 1.5;
-    color: var(--body);
-    margin: 0;
-    max-width: 62ch;
-  }
-  .specbar {
-    list-style: none;
-    margin: 0;
-    padding: 9px 14px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 3px 0;
-    font-family: var(--mono);
-    font-size: 0.76rem;
-    line-height: 1.5;
-    color: var(--muted);
-    background: var(--ground-soft);
-    border-left: 2px solid var(--accent);
-  }
-  .specbar > li { white-space: nowrap; }
-  .specbar > li:not(:last-child)::after {
-    content: "·";
-    padding: 0 9px;
-    color: var(--rule-strong);
-  }
+      /* ---------- masthead ---------- */
+      .masthead {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .eyebrow {
+        font-family: var(--mono);
+        font-size: 0.74rem;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin: 0;
+      }
+      h1 {
+        font-family: var(--serif);
+        font-size: 2.5rem;
+        font-weight: 700;
+        line-height: 1.08;
+        letter-spacing: -0.018em;
+        color: var(--ink);
+        margin: 0;
+        text-wrap: balance;
+      }
+      .standfirst {
+        font-family: var(--serif);
+        font-size: 1.12rem;
+        line-height: 1.5;
+        color: var(--body);
+        margin: 0;
+        max-width: 62ch;
+      }
+      .specbar {
+        list-style: none;
+        margin: 0;
+        padding: 9px 14px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 3px 0;
+        font-family: var(--mono);
+        font-size: 0.76rem;
+        line-height: 1.5;
+        color: var(--muted);
+        background: var(--ground-soft);
+        border-left: 2px solid var(--accent);
+      }
+      .specbar > li {
+        white-space: nowrap;
+      }
+      .specbar > li:not(:last-child)::after {
+        content: "·";
+        padding: 0 9px;
+        color: var(--rule-strong);
+      }
 
-  /* ---------- repository link slot ---------- */
-  .repo-slot {
-    display: flex;
-    align-items: baseline;
-    flex-wrap: wrap;
-    gap: 6px 12px;
-    border: 1.5px dashed var(--rule-strong);
-    border-radius: 3px;
-    padding: 12px 14px;
-  }
-  .repo-slot .repo-label {
-    font-family: var(--mono);
-    font-size: 0.72rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
-  .repo-link {
-    font-family: var(--mono);
-    font-size: 0.86rem;
-    color: var(--accent);
-    text-decoration: none;
-    border-bottom: 1px solid var(--accent);
-  }
-  .repo-link:hover { background: var(--accent-soft); }
+      /* ---------- repository link slot ---------- */
+      .repo-slot {
+        display: flex;
+        align-items: baseline;
+        flex-wrap: wrap;
+        gap: 6px 12px;
+        border: 1.5px dashed var(--rule-strong);
+        border-radius: 3px;
+        padding: 12px 14px;
+      }
+      .repo-slot .repo-label {
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .repo-link {
+        font-family: var(--mono);
+        font-size: 0.86rem;
+        color: var(--accent);
+        text-decoration: none;
+        border-bottom: 1px solid var(--accent);
+      }
+      .repo-link:hover {
+        background: var(--accent-soft);
+      }
 
-  /* ---------- sections ---------- */
-  section { display: flex; flex-direction: column; gap: 18px; }
-  .sec-head {
-    display: flex;
-    align-items: baseline;
-    gap: 14px;
-    border-bottom: 1.5px solid var(--rule-strong);
-    padding-bottom: 6px;
-  }
-  .sec-head h2 {
-    font-family: var(--serif);
-    font-size: 0.8rem;
-    font-weight: 700;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--ink);
-    margin: 0;
-  }
-  .sec-head .sec-no {
-    font-family: var(--mono);
-    font-size: 0.74rem;
-    color: var(--muted);
-    margin-left: auto;
-    font-variant-numeric: tabular-nums;
-  }
-  h3 {
-    font-family: var(--serif);
-    font-size: 1.04rem;
-    font-weight: 700;
-    color: var(--ink);
-    margin: 0;
-  }
-  p { margin: 0; max-width: 70ch; }
-  .lede { max-width: 70ch; }
+      /* ---------- sections ---------- */
+      section {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+      }
+      .sec-head {
+        display: flex;
+        align-items: baseline;
+        gap: 14px;
+        border-bottom: 1.5px solid var(--rule-strong);
+        padding-bottom: 6px;
+      }
+      .sec-head h2 {
+        font-family: var(--serif);
+        font-size: 0.8rem;
+        font-weight: 700;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--ink);
+        margin: 0;
+      }
+      .sec-head .sec-no {
+        font-family: var(--mono);
+        font-size: 0.74rem;
+        color: var(--muted);
+        margin-left: auto;
+        font-variant-numeric: tabular-nums;
+      }
+      h3 {
+        font-family: var(--serif);
+        font-size: 1.04rem;
+        font-weight: 700;
+        color: var(--ink);
+        margin: 0;
+      }
+      p {
+        margin: 0;
+        max-width: 70ch;
+      }
+      .lede {
+        max-width: 70ch;
+      }
 
-  /* ---------- figures ---------- */
-  figure {
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  .fig-frame {
-    background: var(--ground-soft);
-    border: 1px solid var(--rule);
-    border-radius: 3px;
-    padding: 18px 14px;
-    overflow-x: auto;
-  }
-  figure svg { display: block; max-width: 100%; height: auto; margin-inline: auto; color: var(--ink); }
-  figcaption {
-    font-size: 0.86rem;
-    color: var(--muted);
-    max-width: 72ch;
-  }
-  figcaption b { color: var(--body); font-weight: 600; }
+      /* ---------- figures ---------- */
+      figure {
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .fig-frame {
+        background: var(--ground-soft);
+        border: 1px solid var(--rule);
+        border-radius: 3px;
+        padding: 18px 14px;
+        overflow-x: auto;
+      }
+      figure svg {
+        display: block;
+        max-width: 100%;
+        height: auto;
+        margin-inline: auto;
+        color: var(--ink);
+      }
+      figcaption {
+        font-size: 0.86rem;
+        color: var(--muted);
+        max-width: 72ch;
+      }
+      figcaption b {
+        color: var(--body);
+        font-weight: 600;
+      }
 
-  /* ---------- tables ---------- */
-  .tbl-wrap { overflow-x: auto; }
-  table { border-collapse: collapse; width: 100%; font-size: 0.89rem; }
-  caption {
-    text-align: left;
-    font-family: var(--mono);
-    font-size: 0.74rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--muted);
-    padding-bottom: 7px;
-  }
-  th, td {
-    text-align: left;
-    vertical-align: top;
-    padding: 7px 14px 7px 0;
-    border-bottom: 1px solid var(--rule);
-  }
-  th {
-    font-family: var(--serif);
-    font-weight: 700;
-    color: var(--ink);
-    font-size: 0.84rem;
-    border-bottom-color: var(--rule-strong);
-  }
-  td.mono, th.mono { font-family: var(--mono); font-size: 0.82rem; font-variant-numeric: tabular-nums; white-space: nowrap; }
-  td.num { font-family: var(--mono); font-size: 0.82rem; text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
-  tr:last-child td { border-bottom: none; }
-  code {
-    font-family: var(--mono);
-    font-size: 0.86em;
-    background: var(--ground-sunk);
-    padding: 1px 4px;
-    border-radius: 2px;
-  }
+      /* ---------- tables ---------- */
+      .tbl-wrap {
+        overflow-x: auto;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        font-size: 0.89rem;
+      }
+      caption {
+        text-align: left;
+        font-family: var(--mono);
+        font-size: 0.74rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--muted);
+        padding-bottom: 7px;
+      }
+      th,
+      td {
+        text-align: left;
+        vertical-align: top;
+        padding: 7px 14px 7px 0;
+        border-bottom: 1px solid var(--rule);
+      }
+      th {
+        font-family: var(--serif);
+        font-weight: 700;
+        color: var(--ink);
+        font-size: 0.84rem;
+        border-bottom-color: var(--rule-strong);
+      }
+      td.mono,
+      th.mono {
+        font-family: var(--mono);
+        font-size: 0.82rem;
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+      }
+      td.num {
+        font-family: var(--mono);
+        font-size: 0.82rem;
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+      }
+      tr:last-child td {
+        border-bottom: none;
+      }
+      code {
+        font-family: var(--mono);
+        font-size: 0.86em;
+        background: var(--ground-sunk);
+        padding: 1px 4px;
+        border-radius: 2px;
+      }
 
-  /* ---------- decision list ---------- */
-  .decisions { display: flex; flex-direction: column; gap: 20px; }
-  .decision { display: flex; flex-direction: column; gap: 5px; }
-  .decision .d-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
-  .decision .d-tag {
-    font-family: var(--mono);
-    font-size: 0.7rem;
-    letter-spacing: 0.1em;
-    color: var(--accent);
-    border: 1px solid var(--accent);
-    border-radius: 2px;
-    padding: 1px 6px;
-    white-space: nowrap;
-  }
-  .decision .tradeoff {
-    font-size: 0.88rem;
-    color: var(--muted);
-    border-left: 2px solid var(--rule);
-    padding-left: 12px;
-    max-width: 70ch;
-  }
-  .decision .tradeoff b { color: var(--body); font-weight: 600; }
+      /* ---------- decision list ---------- */
+      .decisions {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+      .decision {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+      }
+      .decision .d-head {
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .decision .d-tag {
+        font-family: var(--mono);
+        font-size: 0.7rem;
+        letter-spacing: 0.1em;
+        color: var(--accent);
+        border: 1px solid var(--accent);
+        border-radius: 2px;
+        padding: 1px 6px;
+        white-space: nowrap;
+      }
+      .decision .tradeoff {
+        font-size: 0.88rem;
+        color: var(--muted);
+        border-left: 2px solid var(--rule);
+        padding-left: 12px;
+        max-width: 70ch;
+      }
+      .decision .tradeoff b {
+        color: var(--body);
+        font-weight: 600;
+      }
 
-  /* ---------- evidence / limits ---------- */
-  ul.plain { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 9px; }
-  ul.plain > li { padding-left: 18px; position: relative; max-width: 72ch; }
-  ul.plain > li::before {
-    content: "";
-    position: absolute;
-    left: 0; top: 0.66em;
-    width: 8px; height: 1.5px;
-    background: var(--rule-strong);
-  }
-  ul.plain b { color: var(--ink); font-weight: 600; }
+      /* ---------- evidence / limits ---------- */
+      ul.plain {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 9px;
+      }
+      ul.plain > li {
+        padding-left: 18px;
+        position: relative;
+        max-width: 72ch;
+      }
+      ul.plain > li::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0.66em;
+        width: 8px;
+        height: 1.5px;
+        background: var(--rule-strong);
+      }
+      ul.plain b {
+        color: var(--ink);
+        font-weight: 600;
+      }
 
-  .limits { border-left: 3px solid var(--warn); padding: 4px 0 4px 16px; }
-  .limits .limits-title {
-    font-family: var(--serif);
-    font-weight: 700;
-    color: var(--ink);
-    margin-bottom: 9px;
-  }
+      .limits {
+        border-left: 3px solid var(--warn);
+        padding: 4px 0 4px 16px;
+      }
+      .limits .limits-title {
+        font-family: var(--serif);
+        font-weight: 700;
+        color: var(--ink);
+        margin-bottom: 9px;
+      }
 
-  footer {
-    border-top: 1px solid var(--rule);
-    padding-top: 16px;
-    font-family: var(--mono);
-    font-size: 0.76rem;
-    color: var(--muted);
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px 18px;
-    justify-content: space-between;
-  }
+      footer {
+        border-top: 1px solid var(--rule);
+        padding-top: 16px;
+        font-family: var(--mono);
+        font-size: 0.76rem;
+        color: var(--muted);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px 18px;
+        justify-content: space-between;
+      }
 
-  /* ---------- narrow ---------- */
-  @media (max-width: 620px) {
-    h1 { font-size: 1.85rem; }
-    .standfirst { font-size: 1rem; }
-    .doc { padding-block: 34px 56px; gap: 32px; }
-    body { font-size: 0.94rem; }
-  }
+      /* ---------- narrow ---------- */
+      @media (max-width: 620px) {
+        h1 {
+          font-size: 1.85rem;
+        }
+        .standfirst {
+          font-size: 1rem;
+        }
+        .doc {
+          padding-block: 34px 56px;
+          gap: 32px;
+        }
+        body {
+          font-size: 0.94rem;
+        }
+      }
 
-  /* ---------- print ---------- */
-  @page { size: A4; margin: 14mm 13mm; }
-  @media print {
-    :root {
-      --ground: #fff; --ground-soft: #f5f6f6; --ground-sunk: #eceff0; --ink: #000;
-      --body: #1d2226; --muted: #555f65; --rule: #c8cfd2; --rule-strong: #7d868b;
-      --accent: #0d5661; --accent-soft: #eaf2f3; --warn: #8a5a12;
-    }
-    body { background: #fff; font-size: 9.6pt; }
-    .doc { max-width: none; padding: 0; gap: 20px; }
-    section, figure, .decision, tr { break-inside: avoid; }
-    .sec-head { break-after: avoid; }
-    a { color: inherit; }
-  }
+      /* ---------- print ---------- */
+      @page {
+        size: A4;
+        margin: 14mm 13mm;
+      }
+      @media print {
+        :root {
+          --ground: #fff;
+          --ground-soft: #f5f6f6;
+          --ground-sunk: #eceff0;
+          --ink: #000;
+          --body: #1d2226;
+          --muted: #555f65;
+          --rule: #c8cfd2;
+          --rule-strong: #7d868b;
+          --accent: #0d5661;
+          --accent-soft: #eaf2f3;
+          --warn: #8a5a12;
+        }
+        body {
+          background: #fff;
+          font-size: 9.6pt;
+        }
+        .doc {
+          max-width: none;
+          padding: 0;
+          gap: 20px;
+        }
+        section,
+        figure,
+        .decision,
+        tr {
+          break-inside: avoid;
+        }
+        .sec-head {
+          break-after: avoid;
+        }
+        a {
+          color: inherit;
+        }
+      }
 
-  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
-</style>
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          animation: none !important;
+          transition: none !important;
+        }
+      }
+    </style>
 
-<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
-</head>
-<body>
-<div class="doc">
+    <style>
+      body {
+        margin: 0;
+      }
+      img {
+        max-width: 100%;
+      }
+      [hidden] {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="doc">
+      <!-- ═════════════════ MASTHEAD ═════════════════ -->
+      <header class="masthead">
+        <p class="eyebrow">Technical Brief · Embedded SoC</p>
+        <h1>ZMPIO Guard V3</h1>
+        <p class="standfirst">
+          A vibration-monitoring system built across every layer of a Xilinx
+          Zynq-7020: a DSP pipeline synthesized into FPGA fabric, a FreeRTOS
+          application owning the sensors and the memory card, and embedded Linux
+          consuming a feature stream — three domains on one chip, meeting only
+          in shared DDR.
+        </p>
+        <ul class="specbar">
+          <li>Zynq-7020</li>
+          <li>Cortex-A9 ×2</li>
+          <li>FreeRTOS + PetaLinux 2023.2</li>
+          <li>Verilog + Vitis HLS</li>
+          <li>MIT</li>
+        </ul>
 
-  <!-- ═════════════════ MASTHEAD ═════════════════ -->
-  <header class="masthead">
-    <p class="eyebrow">Technical Brief · Embedded SoC</p>
-    <h1>ZMPIO Guard V3</h1>
-    <p class="standfirst">
-      A vibration-monitoring system built across every layer of a Xilinx Zynq-7020: a DSP pipeline
-      synthesized into FPGA fabric, a FreeRTOS application owning the sensors and the memory card, and
-      embedded Linux consuming a feature stream — three domains on one chip, meeting only in shared DDR.
-    </p>
-    <ul class="specbar">
-      <li>Zynq-7020</li>
-      <li>Cortex-A9 ×2</li>
-      <li>FreeRTOS + PetaLinux 2023.2</li>
-      <li>Verilog + Vitis HLS</li>
-      <li>~40,000 LOC C/C++</li>
-      <li>v1.0.0</li>
-      <li>MIT</li>
-    </ul>
-
-    <!-- ══════════════════════════════════════════════════════════════════════
+        <!-- ══════════════════════════════════════════════════════════════════════
          PASTE THE REPOSITORY LINK HERE.
          Replace href="#" with the real URL and replace the visible text too.
          Example:
            <a class="repo-link" href="https://github.com/you/zmpio-guard">github.com/you/zmpio-guard</a>
          ══════════════════════════════════════════════════════════════════════ -->
-    <div class="repo-slot">
-      <span class="repo-label">Source</span>
-      <a class="repo-link" href="https://github.com/Diate/zmpio-guard_v3">github.com/Diate/zmpio-guard_v3</a>
+        <div class="repo-slot">
+          <span class="repo-label">Source</span>
+          <a class="repo-link" href="https://github.com/Diate/zmpio-guard_v3"
+            >github.com/Diate/zmpio-guard_v3</a
+          >
+        </div>
+      </header>
+
+      <!-- ═════════════════ 1. THE PROBLEM ═════════════════ -->
+      <section>
+        <div class="sec-head">
+          <h2>What the system does</h2>
+          <span class="sec-no">01</span>
+        </div>
+        <p class="lede">
+          An MPU6050 accelerometer is sampled at 100 Hz on three axes. That
+          stream is filtered, reduced to a scalar, transformed, and compressed
+          into a 10-element feature frame roughly every 640 ms — a
+          <b>64:1 data reduction</b> that keeps what anomaly detection needs and
+          discards the rest. Feature frames are checked against versioned
+          threshold rules, written to a microSD card in a self-describing log
+          container, and simultaneously streamed to Linux for capture.
+        </p>
+        <p class="lede">
+          The engineering interest is not the algorithm. It is that the three
+          processing domains have genuinely different failure modes — a hung
+          RTOS task, a Linux process killed mid-read, a full FIFO in fabric —
+          and the interfaces between them had to be designed so that each
+          failure is contained, counted, and distinguishable from the others
+          after the fact.
+        </p>
+      </section>
+
+      <!-- ═════════════════ 2. ARCHITECTURE ═════════════════ -->
+      <section>
+        <div class="sec-head">
+          <h2>System architecture</h2>
+          <span class="sec-no">02</span>
+        </div>
+
+        <figure>
+          <div class="fig-frame">
+            <svg
+              viewBox="0 0 900 566"
+              role="img"
+              width="900"
+              aria-label="Three compute domains on one Zynq-7020: CPU1 running FreeRTOS owns the MPU6050 over I2C and the microSD card over SPI; CPU0 running PetaLinux owns Ethernet; the PL fabric runs the DSP pipeline. The two cores exchange data only through two rings in shared DDR, and the fabric signals both cores with doorbell interrupts."
+            >
+              <defs>
+                <marker
+                  id="ar"
+                  viewBox="0 0 10 10"
+                  refX="9"
+                  refY="5"
+                  markerWidth="7"
+                  markerHeight="7"
+                  orient="auto-start-reverse"
+                >
+                  <polygon points="0,1 10,5 0,9" fill="currentColor" />
+                </marker>
+              </defs>
+
+              <!-- peripherals -->
+              <rect
+                x="16"
+                y="92"
+                width="118"
+                height="36"
+                rx="2"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1"
+                stroke-dasharray="4 3"
+              />
+              <text
+                x="75"
+                y="115"
+                text-anchor="middle"
+                font-size="12.5"
+                fill="currentColor"
+              >
+                MPU6050
+              </text>
+
+              <rect
+                x="16"
+                y="146"
+                width="118"
+                height="36"
+                rx="2"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1"
+                stroke-dasharray="4 3"
+              />
+              <text
+                x="75"
+                y="169"
+                text-anchor="middle"
+                font-size="12.5"
+                fill="currentColor"
+              >
+                microSD
+              </text>
+
+              <rect
+                x="640"
+                y="8"
+                width="160"
+                height="34"
+                rx="2"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1"
+                stroke-dasharray="4 3"
+              />
+              <text
+                x="720"
+                y="30"
+                text-anchor="middle"
+                font-size="12.5"
+                fill="currentColor"
+              >
+                RTL8201F PHY
+              </text>
+
+              <!-- CPU1 -->
+              <rect
+                x="170"
+                y="64"
+                width="280"
+                height="152"
+                rx="3"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+              />
+              <text
+                x="186"
+                y="86"
+                font-size="13.5"
+                font-weight="600"
+                fill="currentColor"
+              >
+                CPU1 — Cortex-A9 #1
+              </text>
+              <text
+                x="186"
+                y="103"
+                font-size="11.5"
+                fill="currentColor"
+                opacity="0.72"
+              >
+                FreeRTOS · 100 Hz tick · 64 KiB heap
+              </text>
+              <rect
+                x="186"
+                y="116"
+                width="120"
+                height="26"
+                rx="2"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="0.9"
+                opacity="0.62"
+              />
+              <text
+                x="246"
+                y="133"
+                text-anchor="middle"
+                font-size="11"
+                fill="currentColor"
+              >
+                sensor_task
+              </text>
+              <rect
+                x="314"
+                y="116"
+                width="120"
+                height="26"
+                rx="2"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="0.9"
+                opacity="0.62"
+              />
+              <text
+                x="374"
+                y="133"
+                text-anchor="middle"
+                font-size="11"
+                fill="currentColor"
+              >
+                storage_task
+              </text>
+              <rect
+                x="186"
+                y="150"
+                width="120"
+                height="26"
+                rx="2"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="0.9"
+                opacity="0.62"
+              />
+              <text
+                x="246"
+                y="167"
+                text-anchor="middle"
+                font-size="11"
+                fill="currentColor"
+              >
+                ipc_rx_task
+              </text>
+              <rect
+                x="314"
+                y="150"
+                width="120"
+                height="26"
+                rx="2"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="0.9"
+                opacity="0.62"
+              />
+              <text
+                x="374"
+                y="167"
+                text-anchor="middle"
+                font-size="11"
+                fill="currentColor"
+              >
+                fpga_result
+              </text>
+              <text
+                x="186"
+                y="198"
+                font-size="11"
+                fill="currentColor"
+                opacity="0.72"
+              >
+                owns I²C + SPI exclusively
+              </text>
+
+              <!-- CPU0 -->
+              <rect
+                x="520"
+                y="64"
+                width="280"
+                height="152"
+                rx="3"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+              />
+              <text
+                x="536"
+                y="86"
+                font-size="13.5"
+                font-weight="600"
+                fill="currentColor"
+              >
+                CPU0 — Cortex-A9 #0
+              </text>
+              <text
+                x="536"
+                y="103"
+                font-size="11.5"
+                fill="currentColor"
+                opacity="0.72"
+              >
+                PetaLinux 2023.2 · sysvinit
+              </text>
+              <rect
+                x="536"
+                y="116"
+                width="120"
+                height="26"
+                rx="2"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="0.9"
+                opacity="0.62"
+              />
+              <text
+                x="596"
+                y="133"
+                text-anchor="middle"
+                font-size="11"
+                fill="currentColor"
+              >
+                zmpiod
+              </text>
+              <rect
+                x="664"
+                y="116"
+                width="120"
+                height="26"
+                rx="2"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="0.9"
+                opacity="0.62"
+              />
+              <text
+                x="724"
+                y="133"
+                text-anchor="middle"
+                font-size="11"
+                fill="currentColor"
+              >
+                zmpioctl
+              </text>
+              <rect
+                x="536"
+                y="150"
+                width="248"
+                height="26"
+                rx="2"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="0.9"
+                opacity="0.62"
+              />
+              <text
+                x="660"
+                y="167"
+                text-anchor="middle"
+                font-size="11"
+                fill="currentColor"
+              >
+                libzmpio — UIO mmap + ring RX
+              </text>
+              <text
+                x="536"
+                y="198"
+                font-size="11"
+                fill="currentColor"
+                opacity="0.72"
+              >
+                exactly one reader of the data ring
+              </text>
+
+              <!-- shared DDR -->
+              <rect
+                x="270"
+                y="286"
+                width="430"
+                height="116"
+                rx="3"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+              />
+              <text
+                x="485"
+                y="308"
+                text-anchor="middle"
+                font-size="13.5"
+                font-weight="600"
+                fill="currentColor"
+              >
+                Shared DDR — uncached, dmb-ordered
+              </text>
+              <rect
+                x="286"
+                y="320"
+                width="196"
+                height="66"
+                rx="2"
+                style="fill: var(--accent-soft)"
+                stroke="currentColor"
+                stroke-width="1"
+              />
+              <text
+                x="384"
+                y="340"
+                text-anchor="middle"
+                font-size="11.5"
+                font-weight="600"
+                fill="currentColor"
+              >
+                ABI v2 · data ring
+              </text>
+              <text
+                x="384"
+                y="356"
+                text-anchor="middle"
+                font-size="10.5"
+                fill="currentColor"
+                opacity="0.78"
+              >
+                0x1900_0000
+              </text>
+              <text
+                x="384"
+                y="372"
+                text-anchor="middle"
+                font-size="10.5"
+                fill="currentColor"
+                opacity="0.78"
+              >
+                256 slots × 256 B, SPSC
+              </text>
+              <rect
+                x="490"
+                y="320"
+                width="196"
+                height="66"
+                rx="2"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1"
+              />
+              <text
+                x="588"
+                y="340"
+                text-anchor="middle"
+                font-size="11.5"
+                font-weight="600"
+                fill="currentColor"
+              >
+                ABI v3 · control
+              </text>
+              <text
+                x="588"
+                y="356"
+                text-anchor="middle"
+                font-size="10.5"
+                fill="currentColor"
+                opacity="0.78"
+              >
+                0x1904_0000
+              </text>
+              <text
+                x="588"
+                y="372"
+                text-anchor="middle"
+                font-size="10.5"
+                fill="currentColor"
+                opacity="0.78"
+              >
+                cmd/resp, CRC32 per slot
+              </text>
+
+              <!-- PL fabric -->
+              <rect
+                x="170"
+                y="452"
+                width="630"
+                height="96"
+                rx="3"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+              />
+              <text
+                x="186"
+                y="474"
+                font-size="13.5"
+                font-weight="600"
+                fill="currentColor"
+              >
+                PL fabric — FCLK 50 MHz
+              </text>
+              <text
+                x="186"
+                y="491"
+                font-size="11.5"
+                fill="currentColor"
+                opacity="0.72"
+              >
+                DSP shell: HLS core + AXIS bridge + control regs + 64-deep FIFO
+              </text>
+              <rect
+                x="186"
+                y="504"
+                width="176"
+                height="28"
+                rx="2"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="0.9"
+                opacity="0.62"
+              />
+              <text
+                x="274"
+                y="522"
+                text-anchor="middle"
+                font-size="11"
+                fill="currentColor"
+              >
+                dsp_core (Vitis HLS)
+              </text>
+              <rect
+                x="370"
+                y="504"
+                width="176"
+                height="28"
+                rx="2"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="0.9"
+                opacity="0.62"
+              />
+              <text
+                x="458"
+                y="522"
+                text-anchor="middle"
+                font-size="11"
+                fill="currentColor"
+              >
+                mmio_axis_bridge.v
+              </text>
+              <rect
+                x="554"
+                y="504"
+                width="176"
+                height="28"
+                rx="2"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="0.9"
+                opacity="0.62"
+              />
+              <text
+                x="642"
+                y="522"
+                text-anchor="middle"
+                font-size="11"
+                fill="currentColor"
+              >
+                zmpio_doorbell.v
+              </text>
+
+              <!-- arrows: peripherals -->
+              <line
+                x1="134"
+                y1="110"
+                x2="166"
+                y2="110"
+                stroke="currentColor"
+                stroke-width="1.4"
+                marker-end="url(#ar)"
+              />
+              <text
+                x="150"
+                y="103"
+                text-anchor="middle"
+                font-size="10"
+                fill="currentColor"
+                opacity="0.8"
+              >
+                I²C
+              </text>
+              <line
+                x1="134"
+                y1="164"
+                x2="166"
+                y2="164"
+                stroke="currentColor"
+                stroke-width="1.4"
+                marker-end="url(#ar)"
+              />
+              <text
+                x="150"
+                y="157"
+                text-anchor="middle"
+                font-size="10"
+                fill="currentColor"
+                opacity="0.8"
+              >
+                SPI
+              </text>
+              <line
+                x1="720"
+                y1="42"
+                x2="720"
+                y2="60"
+                stroke="currentColor"
+                stroke-width="1.4"
+                marker-end="url(#ar)"
+              />
+              <text
+                x="730"
+                y="56"
+                font-size="10"
+                fill="currentColor"
+                opacity="0.8"
+              >
+                GEM0 · network
+              </text>
+
+              <!-- arrows: cores to DDR -->
+              <line
+                x1="330"
+                y1="216"
+                x2="330"
+                y2="282"
+                stroke="currentColor"
+                stroke-width="1.6"
+                marker-end="url(#ar)"
+              />
+              <text x="339" y="245" font-size="10.5" fill="currentColor">
+                publishes
+              </text>
+              <text
+                x="339"
+                y="259"
+                font-size="10.5"
+                fill="currentColor"
+                opacity="0.75"
+              >
+                feature frames
+              </text>
+
+              <line
+                x1="620"
+                y1="282"
+                x2="620"
+                y2="216"
+                stroke="currentColor"
+                stroke-width="1.6"
+                marker-end="url(#ar)"
+              />
+              <text x="629" y="245" font-size="10.5" fill="currentColor">
+                consumes
+              </text>
+              <text
+                x="629"
+                y="259"
+                font-size="10.5"
+                fill="currentColor"
+                opacity="0.75"
+              >
+                via UIO mmap
+              </text>
+
+              <!-- arrows: PL <-> CPU1 (left channel, clear of DDR box) -->
+              <line
+                x1="220"
+                y1="448"
+                x2="220"
+                y2="220"
+                stroke="currentColor"
+                stroke-width="1.6"
+                marker-end="url(#ar)"
+              />
+              <line
+                x1="238"
+                y1="220"
+                x2="238"
+                y2="448"
+                stroke="currentColor"
+                stroke-width="1.6"
+                marker-end="url(#ar)"
+              />
+              <text x="20" y="330" font-size="10.5" fill="currentColor">
+                AXI4-Lite MMIO
+              </text>
+              <text
+                x="20"
+                y="345"
+                font-size="10.5"
+                fill="currentColor"
+                opacity="0.75"
+              >
+                + doorbell IRQ 62
+              </text>
+
+              <!-- arrow: PL -> CPU0 (right channel) -->
+              <line
+                x1="750"
+                y1="448"
+                x2="750"
+                y2="220"
+                stroke="currentColor"
+                stroke-width="1.6"
+                marker-end="url(#ar)"
+              />
+              <text x="762" y="330" font-size="10.5" fill="currentColor">
+                doorbell
+              </text>
+              <text
+                x="762"
+                y="345"
+                font-size="10.5"
+                fill="currentColor"
+                opacity="0.75"
+              >
+                GIC SPI 63
+              </text>
+            </svg>
+          </div>
+          <figcaption>
+            <b
+              >Figure 1 — Peripheral ownership is exclusive, and the cores never
+              share a device.</b
+            >
+            CPU1 alone drives the I²C sensor and the SPI card; CPU0 alone drives
+            Ethernet. The only coupling between the two operating systems is two
+            rings in uncached DDR, which is why either side can be restarted
+            without corrupting the other's device state.
+          </figcaption>
+        </figure>
+      </section>
+
+      <!-- ═════════════════ 3. SIGNAL PATH ═════════════════ -->
+      <section>
+        <div class="sec-head">
+          <h2>Signal path in fabric</h2>
+          <span class="sec-no">03</span>
+        </div>
+
+        <figure>
+          <div class="fig-frame">
+            <svg
+              viewBox="0 0 940 300"
+              role="img"
+              width="940"
+              aria-label="Signal path: 100 samples per second on three axes enter a 16-tap FIR per axis, are reduced to a scalar vector magnitude, buffered in a 128-element ring advanced 64 samples at a time, detrended, then split into a statistics branch and a Hann-windowed 128-point FFT branch, merging into a 48-byte feature frame at 1.56 frames per second."
+            >
+              <defs>
+                <marker
+                  id="ar2"
+                  viewBox="0 0 10 10"
+                  refX="9"
+                  refY="5"
+                  markerWidth="7"
+                  markerHeight="7"
+                  orient="auto-start-reverse"
+                >
+                  <polygon points="0,1 10,5 0,9" fill="currentColor" />
+                </marker>
+              </defs>
+
+              <!-- main chain -->
+              <rect
+                x="12"
+                y="118"
+                width="88"
+                height="44"
+                rx="2"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1"
+                stroke-dasharray="4 3"
+              />
+              <text
+                x="56"
+                y="145"
+                text-anchor="middle"
+                font-size="11.5"
+                fill="currentColor"
+              >
+                MPU6050
+              </text>
+
+              <rect
+                x="122"
+                y="118"
+                width="106"
+                height="44"
+                rx="2"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.4"
+              />
+              <text
+                x="175"
+                y="139"
+                text-anchor="middle"
+                font-size="11.5"
+                fill="currentColor"
+              >
+                FIR 16-tap
+              </text>
+              <text
+                x="175"
+                y="153"
+                text-anchor="middle"
+                font-size="10.5"
+                fill="currentColor"
+                opacity="0.75"
+              >
+                Q15 × 3 axes
+              </text>
+
+              <rect
+                x="250"
+                y="118"
+                width="100"
+                height="44"
+                rx="2"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.4"
+              />
+              <text
+                x="300"
+                y="139"
+                text-anchor="middle"
+                font-size="11.5"
+                fill="currentColor"
+              >
+                magnitude
+              </text>
+              <text
+                x="300"
+                y="153"
+                text-anchor="middle"
+                font-size="10.5"
+                fill="currentColor"
+                opacity="0.75"
+              >
+                √(x²+y²+z²)
+              </text>
+
+              <rect
+                x="372"
+                y="118"
+                width="112"
+                height="44"
+                rx="2"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.4"
+              />
+              <text
+                x="428"
+                y="139"
+                text-anchor="middle"
+                font-size="11.5"
+                fill="currentColor"
+              >
+                128 ring
+              </text>
+              <text
+                x="428"
+                y="153"
+                text-anchor="middle"
+                font-size="10.5"
+                fill="currentColor"
+                opacity="0.75"
+              >
+                64-sample hop
+              </text>
+
+              <rect
+                x="506"
+                y="118"
+                width="86"
+                height="44"
+                rx="2"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.4"
+              />
+              <text
+                x="549"
+                y="145"
+                text-anchor="middle"
+                font-size="11.5"
+                fill="currentColor"
+              >
+                detrend
+              </text>
+
+              <!-- branches -->
+              <rect
+                x="626"
+                y="52"
+                width="184"
+                height="46"
+                rx="2"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.4"
+              />
+              <text
+                x="718"
+                y="73"
+                text-anchor="middle"
+                font-size="11.5"
+                fill="currentColor"
+              >
+                RMS · peak · variance
+              </text>
+              <text
+                x="718"
+                y="88"
+                text-anchor="middle"
+                font-size="11.5"
+                fill="currentColor"
+              >
+                kurtosis
+              </text>
+
+              <rect
+                x="626"
+                y="182"
+                width="184"
+                height="46"
+                rx="2"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.4"
+              />
+              <text
+                x="718"
+                y="203"
+                text-anchor="middle"
+                font-size="11.5"
+                fill="currentColor"
+              >
+                Hann → FFT-128 real
+              </text>
+              <text
+                x="718"
+                y="218"
+                text-anchor="middle"
+                font-size="11.5"
+                fill="currentColor"
+              >
+                dominant bin + 4 bands
+              </text>
+
+              <!-- output -->
+              <rect
+                x="836"
+                y="118"
+                width="96"
+                height="44"
+                rx="2"
+                style="fill: var(--accent-soft)"
+                stroke="currentColor"
+                stroke-width="1.6"
+              />
+              <text
+                x="884"
+                y="139"
+                text-anchor="middle"
+                font-size="11.5"
+                font-weight="600"
+                fill="currentColor"
+              >
+                Feature
+              </text>
+              <text
+                x="884"
+                y="153"
+                text-anchor="middle"
+                font-size="10.5"
+                fill="currentColor"
+                opacity="0.82"
+              >
+                48 B
+              </text>
+
+              <!-- straight arrows -->
+              <line
+                x1="100"
+                y1="140"
+                x2="118"
+                y2="140"
+                stroke="currentColor"
+                stroke-width="1.4"
+                marker-end="url(#ar2)"
+              />
+              <line
+                x1="228"
+                y1="140"
+                x2="246"
+                y2="140"
+                stroke="currentColor"
+                stroke-width="1.4"
+                marker-end="url(#ar2)"
+              />
+              <line
+                x1="350"
+                y1="140"
+                x2="368"
+                y2="140"
+                stroke="currentColor"
+                stroke-width="1.4"
+                marker-end="url(#ar2)"
+              />
+              <line
+                x1="484"
+                y1="140"
+                x2="502"
+                y2="140"
+                stroke="currentColor"
+                stroke-width="1.4"
+                marker-end="url(#ar2)"
+              />
+
+              <!-- fork -->
+              <polyline
+                points="592,140 608,140 608,75 622,75"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.4"
+                marker-end="url(#ar2)"
+              />
+              <polyline
+                points="592,140 608,140 608,205 622,205"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.4"
+                marker-end="url(#ar2)"
+              />
+
+              <!-- merge -->
+              <polyline
+                points="810,75 824,75 824,140 832,140"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.4"
+                marker-end="url(#ar2)"
+              />
+              <polyline
+                points="810,205 824,205 824,140 832,140"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.4"
+              />
+
+              <!-- rate annotations -->
+              <text
+                x="56"
+                y="180"
+                text-anchor="middle"
+                font-size="10.5"
+                fill="currentColor"
+                opacity="0.8"
+              >
+                100 Sa/s
+              </text>
+              <text
+                x="56"
+                y="193"
+                text-anchor="middle"
+                font-size="10.5"
+                fill="currentColor"
+                opacity="0.8"
+              >
+                3 axes
+              </text>
+              <text
+                x="300"
+                y="180"
+                text-anchor="middle"
+                font-size="10.5"
+                fill="currentColor"
+                opacity="0.8"
+              >
+                100 Sa/s scalar
+              </text>
+              <text
+                x="884"
+                y="180"
+                text-anchor="middle"
+                font-size="10.5"
+                fill="currentColor"
+                opacity="0.8"
+              >
+                1.56 frames/s
+              </text>
+              <text
+                x="884"
+                y="193"
+                text-anchor="middle"
+                font-size="10.5"
+                fill="currentColor"
+                opacity="0.8"
+              >
+                every 640 ms
+              </text>
+
+              <!-- headline reduction -->
+              <text
+                x="470"
+                y="268"
+                text-anchor="middle"
+                font-size="12"
+                font-weight="600"
+                fill="currentColor"
+              >
+                64 : 1 data reduction, entirely in programmable logic
+              </text>
+            </svg>
+          </div>
+          <figcaption>
+            <b
+              >Figure 2 — The three axes collapse to a scalar before the FFT,
+              not after.</b
+            >
+            That single placement decision costs directional information and
+            buys a threefold cut in FFT resources plus a feature set invariant
+            to how the sensor is mounted. The whole chain closes timing at 50
+            MHz inside 25 of the device's 220 DSP48E1 slices.
+          </figcaption>
+        </figure>
+      </section>
+
+      <!-- ═════════════════ 4. PL INTEGRATION ═════════════════ -->
+      <section>
+        <div class="sec-head">
+          <h2>PL integration — Vivado block design &amp; AXI</h2>
+          <span class="sec-no">04</span>
+        </div>
+
+        <p class="lede">
+          The HLS core doesn't reach the processing system on its own. It's
+          packaged as an IP-XACT component and wired into a Vivado block design
+          through three hand-written AXI4-Lite peripherals, so custom RTL sits
+          on the bus exactly like a vendor IP block.
+        </p>
+
+        <figure>
+          <div class="fig-frame">
+            <svg
+              viewBox="0 0 900 340"
+              role="img"
+              width="900"
+              aria-label="Vivado block design: the Zynq PS7's general-purpose AXI master feeds an AXI interconnect, which drops an AXI4-Lite tap to each of three custom peripherals — mmio_axis_bridge, zmpio_dsp_ctrl and zmpio_doorbell. Only the first two also sit on an AXI4-Stream path that runs through the HLS dsp_core between them; the doorbell carries no data, only a wakeup. All three are packaged as IP-XACT components."
+            >
+              <defs>
+                <marker
+                  id="arpl"
+                  viewBox="0 0 10 10"
+                  refX="9"
+                  refY="5"
+                  markerWidth="7"
+                  markerHeight="7"
+                  orient="auto-start-reverse"
+                >
+                  <polygon points="0,1 10,5 0,9" fill="currentColor" />
+                </marker>
+              </defs>
+
+              <!-- PS7 -->
+              <rect
+                x="20"
+                y="20"
+                width="140"
+                height="52"
+                rx="3"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+              />
+              <text
+                x="90"
+                y="42"
+                text-anchor="middle"
+                font-size="13"
+                font-weight="600"
+                fill="currentColor"
+              >
+                Zynq PS7
+              </text>
+              <text
+                x="90"
+                y="58"
+                text-anchor="middle"
+                font-size="11"
+                fill="currentColor"
+                opacity="0.72"
+              >
+                GP AXI master
+              </text>
+
+              <!-- interconnect -->
+              <rect
+                x="200"
+                y="20"
+                width="660"
+                height="52"
+                rx="3"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.4"
+              />
+              <text
+                x="530"
+                y="42"
+                text-anchor="middle"
+                font-size="13"
+                font-weight="600"
+                fill="currentColor"
+              >
+                AXI Interconnect
+              </text>
+              <text
+                x="530"
+                y="58"
+                text-anchor="middle"
+                font-size="10.5"
+                fill="currentColor"
+                opacity="0.72"
+              >
+                shared AXI4-Lite address space
+              </text>
+
+              <line
+                x1="160"
+                y1="46"
+                x2="196"
+                y2="46"
+                stroke="currentColor"
+                stroke-width="1.4"
+                marker-end="url(#arpl)"
+              />
+
+              <!-- packaged-IP group -->
+              <rect
+                x="195"
+                y="140"
+                width="670"
+                height="192"
+                rx="3"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1"
+                stroke-dasharray="5 4"
+                opacity="0.55"
+              />
+              <text
+                x="205"
+                y="132"
+                font-size="10"
+                fill="currentColor"
+                opacity="0.65"
+              >
+                hand-written RTL, packaged as IP-XACT
+              </text>
+
+              <!-- peripherals -->
+              <rect
+                x="210"
+                y="150"
+                width="170"
+                height="56"
+                rx="2"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.4"
+              />
+              <text
+                x="295"
+                y="172"
+                text-anchor="middle"
+                font-size="12.5"
+                font-weight="600"
+                fill="currentColor"
+              >
+                mmio_axis_bridge
+              </text>
+              <text
+                x="295"
+                y="189"
+                text-anchor="middle"
+                font-size="10.5"
+                fill="currentColor"
+                opacity="0.75"
+              >
+                AXI4-Lite → AXI4-Stream
+              </text>
+
+              <rect
+                x="420"
+                y="150"
+                width="190"
+                height="56"
+                rx="2"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.4"
+              />
+              <text
+                x="515"
+                y="172"
+                text-anchor="middle"
+                font-size="12.5"
+                font-weight="600"
+                fill="currentColor"
+              >
+                zmpio_dsp_ctrl
+              </text>
+              <text
+                x="515"
+                y="189"
+                text-anchor="middle"
+                font-size="10.5"
+                fill="currentColor"
+                opacity="0.75"
+              >
+                control + 64-entry FIFO
+              </text>
+
+              <rect
+                x="650"
+                y="150"
+                width="170"
+                height="56"
+                rx="2"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.4"
+              />
+              <text
+                x="735"
+                y="172"
+                text-anchor="middle"
+                font-size="12.5"
+                font-weight="600"
+                fill="currentColor"
+              >
+                zmpio_doorbell
+              </text>
+              <text
+                x="735"
+                y="189"
+                text-anchor="middle"
+                font-size="10.5"
+                fill="currentColor"
+                opacity="0.75"
+              >
+                AXI4-Lite only
+              </text>
+              <text
+                x="735"
+                y="222"
+                text-anchor="middle"
+                font-size="10"
+                fill="currentColor"
+                opacity="0.6"
+              >
+                no AXI-Stream port
+              </text>
+
+              <!-- interconnect -> peripherals -->
+              <line
+                x1="295"
+                y1="72"
+                x2="295"
+                y2="146"
+                stroke="currentColor"
+                stroke-width="1.4"
+                marker-end="url(#arpl)"
+              />
+              <line
+                x1="515"
+                y1="72"
+                x2="515"
+                y2="146"
+                stroke="currentColor"
+                stroke-width="1.4"
+                marker-end="url(#arpl)"
+              />
+              <line
+                x1="735"
+                y1="72"
+                x2="735"
+                y2="146"
+                stroke="currentColor"
+                stroke-width="1.4"
+                marker-end="url(#arpl)"
+              />
+              <text
+                x="524"
+                y="112"
+                font-size="10"
+                fill="currentColor"
+                opacity="0.8"
+              >
+                AXI4-Lite
+              </text>
+
+              <!-- dsp_core -->
+              <rect
+                x="300"
+                y="272"
+                width="220"
+                height="56"
+                rx="2"
+                style="fill: var(--accent-soft)"
+                stroke="currentColor"
+                stroke-width="1.6"
+              />
+              <text
+                x="410"
+                y="294"
+                text-anchor="middle"
+                font-size="12.5"
+                font-weight="600"
+                fill="currentColor"
+              >
+                dsp_core (Vitis HLS)
+              </text>
+              <text
+                x="410"
+                y="310"
+                text-anchor="middle"
+                font-size="10.5"
+                fill="currentColor"
+                opacity="0.82"
+              >
+                AXI4-Stream master + slave
+              </text>
+
+              <!-- stream path through the core -->
+              <line
+                x1="335"
+                y1="206"
+                x2="335"
+                y2="268"
+                stroke="currentColor"
+                stroke-width="1.4"
+                marker-end="url(#arpl)"
+              />
+              <text
+                x="345"
+                y="240"
+                font-size="10"
+                fill="currentColor"
+                opacity="0.8"
+              >
+                AXI4-Stream
+              </text>
+              <text
+                x="345"
+                y="253"
+                font-size="9"
+                fill="currentColor"
+                opacity="0.65"
+              >
+                sample_frame
+              </text>
+
+              <line
+                x1="485"
+                y1="272"
+                x2="485"
+                y2="210"
+                stroke="currentColor"
+                stroke-width="1.4"
+                marker-end="url(#arpl)"
+              />
+              <text
+                x="495"
+                y="240"
+                font-size="10"
+                fill="currentColor"
+                opacity="0.8"
+              >
+                AXI4-Stream
+              </text>
+              <text
+                x="495"
+                y="253"
+                font-size="9"
+                fill="currentColor"
+                opacity="0.65"
+              >
+                feature_axis
+              </text>
+            </svg>
+          </div>
+          <figcaption>
+            <b
+              >Figure 3 — Two peripherals carry the data stream; a third carries
+              only a wakeup.</b
+            >
+            <code>mmio_axis_bridge</code> exists because bare-metal CPU1 has no
+            DMA engine, so it turns AXI4-Lite register writes into AXI4-Stream
+            beats for the core; <code>zmpio_dsp_ctrl</code> catches the core's
+            output in a 64-entry FIFO and owns a reset line scoped to the DSP
+            path alone, leaving I²C's shared reset network untouched.
+            <code>zmpio_doorbell</code> sits on the same bus but carries no data
+            — just a CPU1→CPU0 wakeup.
+          </figcaption>
+        </figure>
+      </section>
+
+      <!-- ═════════════════ 5. ETHERNET & NETWORK ═════════════════ -->
+      <section>
+        <div class="sec-head">
+          <h2>Ethernet connectivity</h2>
+          <span class="sec-no">05</span>
+        </div>
+
+        <p class="lede">
+          CPU0 reaches the board's RTL8201F 10/100 PHY through Zynq GEM0 and an
+          EMIO-to-MII path in programmable logic. A dedicated bare-metal image
+          using the lwIP RAW API validates the complete MAC-to-network path
+          independently of the main PetaLinux runtime.
+        </p>
+
+        <figure>
+          <div class="fig-frame">
+            <svg
+              viewBox="0 0 900 178"
+              role="img"
+              width="900"
+              aria-label="Ethernet data path from Zynq GEM0 through the programmable-logic MII adapter and RTL8201F PHY to the external network."
+            >
+              <defs>
+                <marker
+                  id="eth-arrow"
+                  viewBox="0 0 10 10"
+                  refX="9"
+                  refY="5"
+                  markerWidth="7"
+                  markerHeight="7"
+                  orient="auto-start-reverse"
+                >
+                  <polygon points="0,1 10,5 0,9" fill="currentColor" />
+                </marker>
+              </defs>
+
+              <rect x="24" y="42" width="166" height="70" rx="3" fill="none" stroke="currentColor" stroke-width="1.6" />
+              <text x="107" y="69" text-anchor="middle" font-size="13" font-weight="600" fill="currentColor">Zynq PS GEM0</text>
+              <text x="107" y="91" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.72">MAC · DMA · MDIO</text>
+
+              <rect x="250" y="42" width="166" height="70" rx="3" fill="none" stroke="currentColor" stroke-width="1.6" />
+              <text x="333" y="69" text-anchor="middle" font-size="13" font-weight="600" fill="currentColor">PL adapter</text>
+              <text x="333" y="91" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.72">EMIO → 4-bit MII</text>
+
+              <rect x="476" y="42" width="166" height="70" rx="3" fill="none" stroke="currentColor" stroke-width="1.6" />
+              <text x="559" y="69" text-anchor="middle" font-size="13" font-weight="600" fill="currentColor">RTL8201F PHY</text>
+              <text x="559" y="91" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.72">10/100 Ethernet</text>
+
+              <rect x="702" y="42" width="174" height="70" rx="3" fill="none" stroke="currentColor" stroke-width="1.6" />
+              <text x="789" y="69" text-anchor="middle" font-size="13" font-weight="600" fill="currentColor">RJ45 · network</text>
+              <text x="789" y="91" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.72">LAN / Internet</text>
+
+              <line x1="190" y1="77" x2="250" y2="77" stroke="currentColor" stroke-width="1.4" marker-end="url(#eth-arrow)" />
+              <line x1="416" y1="77" x2="476" y2="77" stroke="currentColor" stroke-width="1.4" marker-end="url(#eth-arrow)" />
+              <line x1="642" y1="77" x2="702" y2="77" stroke="currentColor" stroke-width="1.4" marker-end="url(#eth-arrow)" />
+
+              <text x="220" y="64" text-anchor="middle" font-size="9.5" fill="currentColor" opacity="0.7">EMIO</text>
+              <text x="446" y="64" text-anchor="middle" font-size="9.5" fill="currentColor" opacity="0.7">MII</text>
+              <text x="672" y="64" text-anchor="middle" font-size="9.5" fill="currentColor" opacity="0.7">copper</text>
+
+              <path d="M107 112 V148 H559 V112" fill="none" stroke="currentColor" stroke-width="1.1" stroke-dasharray="5 4" marker-end="url(#eth-arrow)" />
+              <text x="333" y="143" text-anchor="middle" font-size="10" fill="currentColor" opacity="0.72">MDC / MDIO management</text>
+            </svg>
+          </div>
+          <figcaption>
+            <b>Figure 4 — GEM0 remains the MAC; programmable logic only adapts the board-level interface.</b>
+            The data path crosses EMIO and MII to the external PHY, while MDC/MDIO provides PHY management.
+          </figcaption>
+        </figure>
+
+        <p>
+          On-board testing confirmed link negotiation, DHCP addressing, DNS
+          resolution and ICMP connectivity to a public Internet host. The
+          bring-up sequence below captures the acceptance path without exposing
+          pin-level configuration or UART logs.
+        </p>
+
+        <figure>
+          <div class="fig-frame">
+            <svg
+              viewBox="0 0 900 154"
+              role="img"
+              width="900"
+              aria-label="CPU0 Ethernet bring-up sequence: initialize GEM0, detect the PHY and establish link, start lwIP, obtain DHCP and DNS configuration, then verify the path with ICMP."
+            >
+              <defs>
+                <marker
+                  id="bringup-arrow"
+                  viewBox="0 0 10 10"
+                  refX="9"
+                  refY="5"
+                  markerWidth="7"
+                  markerHeight="7"
+                  orient="auto-start-reverse"
+                >
+                  <polygon points="0,1 10,5 0,9" fill="currentColor" />
+                </marker>
+              </defs>
+
+              <rect x="18" y="36" width="146" height="70" rx="3" fill="none" stroke="currentColor" stroke-width="1.5" />
+              <text x="91" y="63" text-anchor="middle" font-size="12.5" font-weight="600" fill="currentColor">GEM0 init</text>
+              <text x="91" y="84" text-anchor="middle" font-size="10" fill="currentColor" opacity="0.72">clocks · MAC · DMA</text>
+
+              <rect x="197" y="36" width="146" height="70" rx="3" fill="none" stroke="currentColor" stroke-width="1.5" />
+              <text x="270" y="63" text-anchor="middle" font-size="12.5" font-weight="600" fill="currentColor">PHY + link</text>
+              <text x="270" y="84" text-anchor="middle" font-size="10" fill="currentColor" opacity="0.72">detect · negotiate</text>
+
+              <rect x="376" y="36" width="146" height="70" rx="3" fill="none" stroke="currentColor" stroke-width="1.5" />
+              <text x="449" y="63" text-anchor="middle" font-size="12.5" font-weight="600" fill="currentColor">lwIP RAW</text>
+              <text x="449" y="84" text-anchor="middle" font-size="10" fill="currentColor" opacity="0.72">timers · RX polling</text>
+
+              <rect x="555" y="36" width="146" height="70" rx="3" fill="none" stroke="currentColor" stroke-width="1.5" />
+              <text x="628" y="63" text-anchor="middle" font-size="12.5" font-weight="600" fill="currentColor">DHCP + DNS</text>
+              <text x="628" y="84" text-anchor="middle" font-size="10" fill="currentColor" opacity="0.72">address · resolve</text>
+
+              <rect x="734" y="36" width="148" height="70" rx="3" fill="var(--accent-soft)" stroke="currentColor" stroke-width="1.5" />
+              <text x="808" y="63" text-anchor="middle" font-size="12.5" font-weight="600" fill="currentColor">ICMP verify</text>
+              <text x="808" y="84" text-anchor="middle" font-size="10" fill="currentColor" opacity="0.72">4 / 4 replies</text>
+
+              <line x1="164" y1="71" x2="197" y2="71" stroke="currentColor" stroke-width="1.35" marker-end="url(#bringup-arrow)" />
+              <line x1="343" y1="71" x2="376" y2="71" stroke="currentColor" stroke-width="1.35" marker-end="url(#bringup-arrow)" />
+              <line x1="522" y1="71" x2="555" y2="71" stroke="currentColor" stroke-width="1.35" marker-end="url(#bringup-arrow)" />
+              <line x1="701" y1="71" x2="734" y2="71" stroke="currentColor" stroke-width="1.35" marker-end="url(#bringup-arrow)" />
+
+              <text x="450" y="133" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.72">CPU0 bare-metal validation image · observed on hardware</text>
+            </svg>
+          </div>
+          <figcaption>
+            <b>Figure 5 — Bring-up advances from the MAC to an end-to-end network check.</b>
+            DHCP, DNS and ICMP together verify the path beyond the local PHY link.
+          </figcaption>
+        </figure>
+      </section>
+
+      <!-- ═════════════════ 6. IPC ═════════════════ -->
+      <section>
+        <div class="sec-head">
+          <h2>Cross-core IPC</h2>
+          <span class="sec-no">06</span>
+        </div>
+
+        <p class="lede">
+          Two Cortex-A9 cores running different operating systems share a ring
+          in uncached DDR with no lock and no hardware mailbox. Correctness
+          rests entirely on write ordering and on a single-producer,
+          single-consumer discipline that the design enforces rather than
+          assumes.
+        </p>
+
+        <figure>
+          <div class="fig-frame">
+            <svg
+              viewBox="0 0 880 306"
+              role="img"
+              width="880"
+              aria-label="Single-producer single-consumer ring: CPU1 writes the payload into the slot at head, issues a data memory barrier, then advances head. Linux reads head, issues a barrier, then reads the payload at tail. If the next head would equal tail the producer refuses to write rather than overwriting unread data."
+            >
+              <defs>
+                <marker
+                  id="ar3"
+                  viewBox="0 0 10 10"
+                  refX="9"
+                  refY="5"
+                  markerWidth="7"
+                  markerHeight="7"
+                  orient="auto-start-reverse"
+                >
+                  <polygon points="0,1 10,5 0,9" fill="currentColor" />
+                </marker>
+              </defs>
+
+              <!-- producer -->
+              <rect
+                x="30"
+                y="14"
+                width="212"
+                height="56"
+                rx="3"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.6"
+              />
+              <text
+                x="136"
+                y="36"
+                text-anchor="middle"
+                font-size="12.5"
+                font-weight="600"
+                fill="currentColor"
+              >
+                CPU1 — producer
+              </text>
+              <text
+                x="136"
+                y="55"
+                text-anchor="middle"
+                font-size="11"
+                fill="currentColor"
+                opacity="0.78"
+              >
+                1. payload → 2. dmb → 3. head++
+              </text>
+
+              <!-- ring cells -->
+              <rect
+                x="120"
+                y="112"
+                width="62"
+                height="58"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.2"
+              />
+              <rect
+                x="182"
+                y="112"
+                width="62"
+                height="58"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.2"
+              />
+              <rect
+                x="244"
+                y="112"
+                width="62"
+                height="58"
+                style="fill: var(--accent-soft)"
+                stroke="currentColor"
+                stroke-width="1.2"
+              />
+              <rect
+                x="306"
+                y="112"
+                width="62"
+                height="58"
+                style="fill: var(--accent-soft)"
+                stroke="currentColor"
+                stroke-width="1.2"
+              />
+              <rect
+                x="368"
+                y="112"
+                width="62"
+                height="58"
+                style="fill: var(--accent-soft)"
+                stroke="currentColor"
+                stroke-width="1.2"
+              />
+              <rect
+                x="430"
+                y="112"
+                width="62"
+                height="58"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.2"
+              />
+              <rect
+                x="492"
+                y="112"
+                width="62"
+                height="58"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.2"
+              />
+              <rect
+                x="554"
+                y="112"
+                width="62"
+                height="58"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.2"
+              />
+              <rect
+                x="616"
+                y="112"
+                width="62"
+                height="58"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.2"
+              />
+              <text
+                x="399"
+                y="147"
+                text-anchor="middle"
+                font-size="10.5"
+                fill="currentColor"
+                opacity="0.85"
+              >
+                unread
+              </text>
+
+              <!-- head marker -->
+              <polygon points="461,104 455,92 467,92" fill="currentColor" />
+              <text
+                x="461"
+                y="86"
+                text-anchor="middle"
+                font-size="11.5"
+                font-weight="600"
+                fill="currentColor"
+              >
+                head
+              </text>
+
+              <!-- tail marker -->
+              <polygon points="275,178 269,190 281,190" fill="currentColor" />
+              <text
+                x="275"
+                y="204"
+                text-anchor="middle"
+                font-size="11.5"
+                font-weight="600"
+                fill="currentColor"
+              >
+                tail
+              </text>
+
+              <!-- producer arrow to head -->
+              <polyline
+                points="242,42 461,42 461,100"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                marker-end="url(#ar3)"
+              />
+              <text
+                x="352"
+                y="35"
+                text-anchor="middle"
+                font-size="10.5"
+                fill="currentColor"
+                opacity="0.8"
+              >
+                writes at head
+              </text>
+
+              <!-- consumer -->
+              <rect
+                x="560"
+                y="232"
+                width="212"
+                height="56"
+                rx="3"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.6"
+              />
+              <text
+                x="666"
+                y="254"
+                text-anchor="middle"
+                font-size="12.5"
+                font-weight="600"
+                fill="currentColor"
+              >
+                Linux — sole consumer
+              </text>
+              <text
+                x="666"
+                y="273"
+                text-anchor="middle"
+                font-size="11"
+                fill="currentColor"
+                opacity="0.78"
+              >
+                reads head → dmb → payload
+              </text>
+
+              <!-- consumer arrow to tail -->
+              <polyline
+                points="560,260 275,260 275,194"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                marker-end="url(#ar3)"
+              />
+              <text
+                x="418"
+                y="253"
+                text-anchor="middle"
+                font-size="10.5"
+                fill="currentColor"
+                opacity="0.8"
+              >
+                reads at tail
+              </text>
+
+              <!-- invariant -->
+              <text
+                x="700"
+                y="130"
+                font-size="11"
+                font-weight="600"
+                fill="currentColor"
+              >
+                Invariant
+              </text>
+              <text
+                x="700"
+                y="147"
+                font-size="10.5"
+                fill="currentColor"
+                opacity="0.82"
+              >
+                next_head == tail
+              </text>
+              <text
+                x="700"
+                y="161"
+                font-size="10.5"
+                fill="currentColor"
+                opacity="0.82"
+              >
+                → refuse the write,
+              </text>
+              <text
+                x="700"
+                y="175"
+                font-size="10.5"
+                fill="currentColor"
+                opacity="0.82"
+              >
+                never overwrite
+              </text>
+            </svg>
+          </div>
+          <figcaption>
+            <b>Figure 6 — The barrier, not a lock, is what makes this safe.</b>
+            Because the producer commits the payload before it publishes the
+            index, a consumer that observes a new <code>head</code> is
+            guaranteed to observe a complete payload. A full ring is refused
+            rather than overwritten, so back-pressure surfaces as a counted drop
+            instead of silent corruption.
+          </figcaption>
+        </figure>
+
+        <div class="tbl-wrap">
+          <table>
+            <caption>
+              Address map
+            </caption>
+            <thead>
+              <tr>
+                <th>Region</th>
+                <th class="mono">Base</th>
+                <th>Size / shape</th>
+                <th>Owner</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Linux (PetaLinux)</td>
+                <td class="mono">0x0000_0000</td>
+                <td>up to <code>0x17FF_FFFF</code>, cacheable</td>
+                <td>CPU0</td>
+              </tr>
+              <tr>
+                <td>CPU1 firmware</td>
+                <td class="mono">0x1800_0000</td>
+                <td>16 MiB, cacheable</td>
+                <td>CPU1</td>
+              </tr>
+              <tr>
+                <td>ABI v2 data ring</td>
+                <td class="mono">0x1900_0000</td>
+                <td>256 slots × 256 B, uncached</td>
+                <td>CPU1 writes, Linux reads</td>
+              </tr>
+              <tr>
+                <td>ABI v2 command ring</td>
+                <td class="mono">0x1902_0000</td>
+                <td>256 slots × 256 B, uncached</td>
+                <td>Linux writes, CPU1 reads</td>
+              </tr>
+              <tr>
+                <td>ABI v3 control block</td>
+                <td class="mono">0x1904_0000</td>
+                <td>52 B, per-field ownership</td>
+                <td>both, single writer per field</td>
+              </tr>
+              <tr>
+                <td>ABI v3 cmd / resp rings</td>
+                <td class="mono">0x1904_1000</td>
+                <td>16 × 84 B / 16 × 88 B, CRC32 per slot</td>
+                <td>CPU0 → CPU1 → CPU0</td>
+              </tr>
+              <tr>
+                <td>PL doorbell registers</td>
+                <td class="mono">0x4000_2000</td>
+                <td>AXI4-Lite, GIC SPI 62 / 63</td>
+                <td>PL → both cores</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ═════════════════ 7. DECISIONS ═════════════════ -->
+      <section>
+        <div class="sec-head">
+          <h2>Engineering decisions</h2>
+          <span class="sec-no">07</span>
+        </div>
+
+        <div class="decisions">
+          <div class="decision">
+            <div class="d-head">
+              <h3>One C++ source, two synthesis targets</h3>
+              <span class="d-tag">verifiability</span>
+            </div>
+            <p>
+              The DSP algorithm compiles on a PC to generate golden vectors and
+              is synthesized by Vitis HLS into the RTL that runs in fabric. Both
+              must agree bit for bit.
+            </p>
+            <p class="tradeoff">
+              <b>Cost:</b> the algorithm may not allocate, may not do I/O, and
+              may not touch <code>&lt;chrono&gt;</code>
+              — every design choice inside it is constrained by HLS
+              synthesizability.
+              <b>Return:</b> the entire signal chain regresses offline with no
+              board attached, and a fabric result that diverges from the host
+              model is a provable defect rather than a judgement call.
+            </p>
+          </div>
+
+          <div class="decision">
+            <div class="d-head">
+              <h3>Wire layouts are pinned at compile time</h3>
+              <span class="d-tag">interface safety</span>
+            </div>
+            <p>
+              Every struct crossing a core boundary carries a layout hash, and
+              each field is guarded by an
+              <code>offsetof()</code> <code>_Static_assert</code> in the
+              firmware.
+            </p>
+            <p class="tradeoff">
+              <b>Cost:</b> a deliberate field change means regenerating the hash
+              and re-verifying the affected channel. <b>Return:</b> an
+              accidental field reorder breaks the build loudly instead of
+              producing plausible-looking garbage on a board that is hard to
+              instrument.
+            </p>
+          </div>
+
+          <div class="decision">
+            <div class="d-head">
+              <h3>The stream path never blocks, it drops and counts</h3>
+              <span class="d-tag">real-time</span>
+            </div>
+            <p>
+              Feature sends use a bounded wait. When the ring is full the frame
+              is discarded and a counter increments; the task returns to
+              servicing fabric on time.
+            </p>
+            <p class="tradeoff">
+              <b>Cost:</b> the Linux side can miss frames and must reason about
+              gaps. <b>Return:</b> a late result task overflows the 64-deep FIFO
+              in fabric, which is a real hardware failure. A missing frame in a
+              log is not. The design trades the cheap failure for the expensive
+              one.
+            </p>
+          </div>
+
+          <div class="decision">
+            <div class="d-head">
+              <h3>Sequence numbers are assigned only on a successful send</h3>
+              <span class="d-tag">observability</span>
+            </div>
+            <p>A dropped frame does not consume a stream sequence number.</p>
+            <p class="tradeoff">
+              <b>Return:</b> a gap in the sequence can then mean exactly one
+              thing — lost in transit after CPU1 sent it — and never "CPU1
+              failed to send." Two failure modes that would otherwise be
+              indistinguishable in a capture become separable without any extra
+              telemetry.
+            </p>
+          </div>
+
+          <div class="decision">
+            <div class="d-head">
+              <h3>DSP resources are capped on purpose</h3>
+              <span class="d-tag">area / throughput</span>
+            </div>
+            <p>
+              An HLS allocation pragma limits the design to one instance of each
+              expensive operator in five places, holding it to 25 of 220 DSP48E1
+              slices.
+            </p>
+            <p class="tradeoff">
+              <b>Cost:</b> throughput per frame drops substantially.
+              <b>Return:</b> the frame budget is 32,000,000 cycles and a frame
+              needs tens of thousands, so three orders of magnitude of headroom
+              were spent to leave the rest of the device free.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═════════════════ 8. STACK ═════════════════ -->
+      <section>
+        <div class="sec-head">
+          <h2>Technology stack</h2>
+          <span class="sec-no">08</span>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Layer</th>
+                <th>Built with</th>
+                <th>Notable detail</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Programmable logic</td>
+                <td>Vitis HLS 2023.2, Verilog, Vivado, IP-XACT</td>
+                <td class="mono">50 MHz · 25/220 DSP48E1</td>
+              </tr>
+              <tr>
+                <td>RTOS application</td>
+                <td>FreeRTOS on Cortex-A9, C</td>
+                <td class="mono">4 tasks · 100 Hz tick · 64 KiB heap</td>
+              </tr>
+              <tr>
+                <td>Sensor + storage</td>
+                <td>I²C polled driver, SD-SPI, FatFs</td>
+                <td class="mono">CRC32 per record · f_sync ≤ 1 s</td>
+              </tr>
+              <tr>
+                <td>Cross-core IPC</td>
+                <td>Uncached shared DDR, <code>dmb</code> ordering</td>
+                <td class="mono">ABI v2 + ABI v3, hash-pinned</td>
+              </tr>
+              <tr>
+                <td>Embedded Linux</td>
+                <td>PetaLinux 2023.2, device tree, UIO, sysvinit</td>
+                <td class="mono">no custom kernel driver</td>
+              </tr>
+              <tr>
+                <td>Linux user space</td>
+                <td>C, CMake cross-build — libzmpio / zmpiod / zmpioctl</td>
+                <td class="mono">group-gated control socket</td>
+              </tr>
+              <tr>
+                <td>Networking</td>
+                <td>GEM0 over EMIO/MII + RTL8201F; lwIP RAW bring-up</td>
+                <td class="mono">bare-metal: DHCP · ICMP · DNS</td>
+              </tr>
+              <tr>
+                <td>Verification</td>
+                <td>Host DSP model, golden vectors, Python tooling</td>
+                <td class="mono">fault injection · soak · cold boot</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ═════════════════ 9. EVIDENCE ═════════════════ -->
+      <section>
+        <div class="sec-head">
+          <h2>What was demonstrated on hardware</h2>
+          <span class="sec-no">09</span>
+        </div>
+        <ul class="plain">
+          <li>
+            <b>10,000 of 10,000 doorbell interrupts</b> delivered with no lost
+            wakeup; spurious interrupts produced no phantom events, and an
+            interrupt storm did not crash the system.
+          </li>
+          <li>
+            <b>4 of 4 fault-injection gates</b> passed, including resetting the
+            DSP core mid-run and forcing the fabric FIFO full — in both cases
+            the I²C, SD and scheduler paths kept running and the backlog
+            drained.
+          </li>
+          <li>
+            <b>One-hour IPC soak</b> and roughly
+            <b>25 minutes of continuous feature streaming</b> to Linux with zero
+            drops, zero gaps and zero mount failures.
+          </li>
+          <li>
+            <b>Ethernet to the open Internet on the CPU0 bare-metal image</b> —
+            DHCP bind, DNS resolution and ICMP replies from a public host.
+          </li>
+          <li>
+            <b
+              >Two stack overflows located by direct observation, not
+              inference:</b
+            >
+            halting CPU1 over JTAG put the program counter inside the overflow
+            hook, and reading the task-name bytes at the hook's argument pointer
+            named the offending task.
+          </li>
+          <li>
+            <b>A cross-core interrupt race root-caused:</b> the Linux core's GIC
+            distributor initialization ran after CPU1 had already enabled its
+            interrupt, silently clearing the enable bit. The fix makes CPU1 wait
+            on the distributor control register and re-arm under a watchdog.
+          </li>
+        </ul>
+
+        <p class="lede">
+          By the project's own rule on evidence, V3 is <b>not</b> declared
+          complete. It is released at the level that has been proven, and the
+          gap is documented rather than left for a reader to discover.
+        </p>
+      </section>
+
+      <footer>
+        <span>ZMPIO Guard V3 · v1.0.0 · MIT</span>
+        <span>Tran Bao Tu · baotutran12@gmail.com</span>
+      </footer>
     </div>
-  </header>
-
-  <!-- ═════════════════ 1. THE PROBLEM ═════════════════ -->
-  <section>
-    <div class="sec-head"><h2>What the system does</h2><span class="sec-no">01</span></div>
-    <p class="lede">
-      An MPU6050 accelerometer is sampled at 100 Hz on three axes. That stream is filtered, reduced to a
-      scalar, transformed, and compressed into a 10-element feature frame roughly every 640 ms — a
-      <b>64:1 data reduction</b> that keeps what anomaly detection needs and discards the rest. Feature
-      frames are checked against versioned threshold rules, written to a microSD card in a self-describing
-      log container, and simultaneously streamed to Linux for capture.
-    </p>
-    <p class="lede">
-      The engineering interest is not the algorithm. It is that the three processing domains have genuinely
-      different failure modes — a hung RTOS task, a Linux process killed mid-read, a full FIFO in fabric —
-      and the interfaces between them had to be designed so that each failure is contained, counted, and
-      distinguishable from the others after the fact.
-    </p>
-  </section>
-
-  <!-- ═════════════════ 2. ARCHITECTURE ═════════════════ -->
-  <section>
-    <div class="sec-head"><h2>System architecture</h2><span class="sec-no">02</span></div>
-
-    <figure>
-      <div class="fig-frame">
-        <svg viewBox="0 0 900 566" role="img" width="900"
-             aria-label="Three compute domains on one Zynq-7020: CPU1 running FreeRTOS owns the MPU6050 over I2C and the microSD card over SPI; CPU0 running PetaLinux owns Ethernet; the PL fabric runs the DSP pipeline. The two cores exchange data only through two rings in shared DDR, and the fabric signals both cores with doorbell interrupts.">
-          <defs>
-            <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-              <polygon points="0,1 10,5 0,9" fill="currentColor"/>
-            </marker>
-          </defs>
-
-          <!-- peripherals -->
-          <rect x="16" y="92" width="118" height="36" rx="2" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="4 3"/>
-          <text x="75" y="115" text-anchor="middle" font-size="12.5" fill="currentColor">MPU6050</text>
-
-          <rect x="16" y="146" width="118" height="36" rx="2" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="4 3"/>
-          <text x="75" y="169" text-anchor="middle" font-size="12.5" fill="currentColor">microSD</text>
-
-          <rect x="640" y="8" width="160" height="34" rx="2" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="4 3"/>
-          <text x="720" y="30" text-anchor="middle" font-size="12.5" fill="currentColor">RTL8201F PHY</text>
-
-          <!-- CPU1 -->
-          <rect x="170" y="64" width="280" height="152" rx="3" fill="none" stroke="currentColor" stroke-width="1.8"/>
-          <text x="186" y="86" font-size="13.5" font-weight="600" fill="currentColor">CPU1 — Cortex-A9 #1</text>
-          <text x="186" y="103" font-size="11.5" fill="currentColor" opacity="0.72">FreeRTOS · 100 Hz tick · 64 KiB heap</text>
-          <rect x="186" y="116" width="120" height="26" rx="2" fill="none" stroke="currentColor" stroke-width="0.9" opacity="0.62"/>
-          <text x="246" y="133" text-anchor="middle" font-size="11" fill="currentColor">sensor_task</text>
-          <rect x="314" y="116" width="120" height="26" rx="2" fill="none" stroke="currentColor" stroke-width="0.9" opacity="0.62"/>
-          <text x="374" y="133" text-anchor="middle" font-size="11" fill="currentColor">storage_task</text>
-          <rect x="186" y="150" width="120" height="26" rx="2" fill="none" stroke="currentColor" stroke-width="0.9" opacity="0.62"/>
-          <text x="246" y="167" text-anchor="middle" font-size="11" fill="currentColor">ipc_rx_task</text>
-          <rect x="314" y="150" width="120" height="26" rx="2" fill="none" stroke="currentColor" stroke-width="0.9" opacity="0.62"/>
-          <text x="374" y="167" text-anchor="middle" font-size="11" fill="currentColor">fpga_result</text>
-          <text x="186" y="198" font-size="11" fill="currentColor" opacity="0.72">owns I²C + SPI exclusively</text>
-
-          <!-- CPU0 -->
-          <rect x="520" y="64" width="280" height="152" rx="3" fill="none" stroke="currentColor" stroke-width="1.8"/>
-          <text x="536" y="86" font-size="13.5" font-weight="600" fill="currentColor">CPU0 — Cortex-A9 #0</text>
-          <text x="536" y="103" font-size="11.5" fill="currentColor" opacity="0.72">PetaLinux 2023.2 · sysvinit</text>
-          <rect x="536" y="116" width="120" height="26" rx="2" fill="none" stroke="currentColor" stroke-width="0.9" opacity="0.62"/>
-          <text x="596" y="133" text-anchor="middle" font-size="11" fill="currentColor">zmpiod</text>
-          <rect x="664" y="116" width="120" height="26" rx="2" fill="none" stroke="currentColor" stroke-width="0.9" opacity="0.62"/>
-          <text x="724" y="133" text-anchor="middle" font-size="11" fill="currentColor">zmpioctl</text>
-          <rect x="536" y="150" width="248" height="26" rx="2" fill="none" stroke="currentColor" stroke-width="0.9" opacity="0.62"/>
-          <text x="660" y="167" text-anchor="middle" font-size="11" fill="currentColor">libzmpio — UIO mmap + ring RX</text>
-          <text x="536" y="198" font-size="11" fill="currentColor" opacity="0.72">exactly one reader of the data ring</text>
-
-          <!-- shared DDR -->
-          <rect x="270" y="286" width="430" height="116" rx="3" fill="none" stroke="currentColor" stroke-width="1.8"/>
-          <text x="485" y="308" text-anchor="middle" font-size="13.5" font-weight="600" fill="currentColor">Shared DDR — uncached, dmb-ordered</text>
-          <rect x="286" y="320" width="196" height="66" rx="2" style="fill:var(--accent-soft)" stroke="currentColor" stroke-width="1"/>
-          <text x="384" y="340" text-anchor="middle" font-size="11.5" font-weight="600" fill="currentColor">ABI v2 · data ring</text>
-          <text x="384" y="356" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">0x1900_0000</text>
-          <text x="384" y="372" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">256 slots × 256 B, SPSC</text>
-          <rect x="490" y="320" width="196" height="66" rx="2" fill="none" stroke="currentColor" stroke-width="1"/>
-          <text x="588" y="340" text-anchor="middle" font-size="11.5" font-weight="600" fill="currentColor">ABI v3 · control</text>
-          <text x="588" y="356" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">0x1904_0000</text>
-          <text x="588" y="372" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.78">cmd/resp, CRC32 per slot</text>
-
-          <!-- PL fabric -->
-          <rect x="170" y="452" width="630" height="96" rx="3" fill="none" stroke="currentColor" stroke-width="1.8"/>
-          <text x="186" y="474" font-size="13.5" font-weight="600" fill="currentColor">PL fabric — FCLK 50 MHz</text>
-          <text x="186" y="491" font-size="11.5" fill="currentColor" opacity="0.72">DSP shell: HLS core + AXIS bridge + control regs + 64-deep FIFO</text>
-          <rect x="186" y="504" width="176" height="28" rx="2" fill="none" stroke="currentColor" stroke-width="0.9" opacity="0.62"/>
-          <text x="274" y="522" text-anchor="middle" font-size="11" fill="currentColor">dsp_core (Vitis HLS)</text>
-          <rect x="370" y="504" width="176" height="28" rx="2" fill="none" stroke="currentColor" stroke-width="0.9" opacity="0.62"/>
-          <text x="458" y="522" text-anchor="middle" font-size="11" fill="currentColor">mmio_axis_bridge.v</text>
-          <rect x="554" y="504" width="176" height="28" rx="2" fill="none" stroke="currentColor" stroke-width="0.9" opacity="0.62"/>
-          <text x="642" y="522" text-anchor="middle" font-size="11" fill="currentColor">zmpio_doorbell.v</text>
-
-          <!-- arrows: peripherals -->
-          <line x1="134" y1="110" x2="166" y2="110" stroke="currentColor" stroke-width="1.4" marker-end="url(#ar)"/>
-          <text x="150" y="103" text-anchor="middle" font-size="10" fill="currentColor" opacity="0.8">I²C</text>
-          <line x1="134" y1="164" x2="166" y2="164" stroke="currentColor" stroke-width="1.4" marker-end="url(#ar)"/>
-          <text x="150" y="157" text-anchor="middle" font-size="10" fill="currentColor" opacity="0.8">SPI</text>
-          <line x1="720" y1="42" x2="720" y2="60" stroke="currentColor" stroke-width="1.4" marker-end="url(#ar)"/>
-          <text x="730" y="56" font-size="10" fill="currentColor" opacity="0.8">GEM0 · lwIP</text>
-
-          <!-- arrows: cores to DDR -->
-          <line x1="330" y1="216" x2="330" y2="282" stroke="currentColor" stroke-width="1.6" marker-end="url(#ar)"/>
-          <text x="339" y="245" font-size="10.5" fill="currentColor">publishes</text>
-          <text x="339" y="259" font-size="10.5" fill="currentColor" opacity="0.75">feature frames</text>
-
-          <line x1="620" y1="282" x2="620" y2="216" stroke="currentColor" stroke-width="1.6" marker-end="url(#ar)"/>
-          <text x="629" y="245" font-size="10.5" fill="currentColor">consumes</text>
-          <text x="629" y="259" font-size="10.5" fill="currentColor" opacity="0.75">via UIO mmap</text>
-
-          <!-- arrows: PL <-> CPU1 (left channel, clear of DDR box) -->
-          <line x1="220" y1="448" x2="220" y2="220" stroke="currentColor" stroke-width="1.6" marker-end="url(#ar)"/>
-          <line x1="238" y1="220" x2="238" y2="448" stroke="currentColor" stroke-width="1.6" marker-end="url(#ar)"/>
-          <text x="20" y="330" font-size="10.5" fill="currentColor">AXI4-Lite MMIO</text>
-          <text x="20" y="345" font-size="10.5" fill="currentColor" opacity="0.75">+ doorbell IRQ 62</text>
-
-          <!-- arrow: PL -> CPU0 (right channel) -->
-          <line x1="750" y1="448" x2="750" y2="220" stroke="currentColor" stroke-width="1.6" marker-end="url(#ar)"/>
-          <text x="762" y="330" font-size="10.5" fill="currentColor">doorbell</text>
-          <text x="762" y="345" font-size="10.5" fill="currentColor" opacity="0.75">GIC SPI 63</text>
-        </svg>
-      </div>
-      <figcaption>
-        <b>Figure 1 — Peripheral ownership is exclusive, and the cores never share a device.</b>
-        CPU1 alone drives the I²C sensor and the SPI card; CPU0 alone drives Ethernet. The only coupling
-        between the two operating systems is two rings in uncached DDR, which is why either side can be
-        restarted without corrupting the other's device state.
-      </figcaption>
-    </figure>
-  </section>
-
-  <!-- ═════════════════ 3. SIGNAL PATH ═════════════════ -->
-  <section>
-    <div class="sec-head"><h2>Signal path in fabric</h2><span class="sec-no">03</span></div>
-
-    <figure>
-      <div class="fig-frame">
-        <svg viewBox="0 0 940 300" role="img" width="940"
-             aria-label="Signal path: 100 samples per second on three axes enter a 16-tap FIR per axis, are reduced to a scalar vector magnitude, buffered in a 128-element ring advanced 64 samples at a time, detrended, then split into a statistics branch and a Hann-windowed 128-point FFT branch, merging into a 48-byte feature frame at 1.56 frames per second.">
-          <defs>
-            <marker id="ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-              <polygon points="0,1 10,5 0,9" fill="currentColor"/>
-            </marker>
-          </defs>
-
-          <!-- main chain -->
-          <rect x="12" y="118" width="88" height="44" rx="2" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="4 3"/>
-          <text x="56" y="145" text-anchor="middle" font-size="11.5" fill="currentColor">MPU6050</text>
-
-          <rect x="122" y="118" width="106" height="44" rx="2" fill="none" stroke="currentColor" stroke-width="1.4"/>
-          <text x="175" y="139" text-anchor="middle" font-size="11.5" fill="currentColor">FIR 16-tap</text>
-          <text x="175" y="153" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.75">Q15 × 3 axes</text>
-
-          <rect x="250" y="118" width="100" height="44" rx="2" fill="none" stroke="currentColor" stroke-width="1.4"/>
-          <text x="300" y="139" text-anchor="middle" font-size="11.5" fill="currentColor">magnitude</text>
-          <text x="300" y="153" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.75">√(x²+y²+z²)</text>
-
-          <rect x="372" y="118" width="112" height="44" rx="2" fill="none" stroke="currentColor" stroke-width="1.4"/>
-          <text x="428" y="139" text-anchor="middle" font-size="11.5" fill="currentColor">128 ring</text>
-          <text x="428" y="153" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.75">64-sample hop</text>
-
-          <rect x="506" y="118" width="86" height="44" rx="2" fill="none" stroke="currentColor" stroke-width="1.4"/>
-          <text x="549" y="145" text-anchor="middle" font-size="11.5" fill="currentColor">detrend</text>
-
-          <!-- branches -->
-          <rect x="626" y="52" width="184" height="46" rx="2" fill="none" stroke="currentColor" stroke-width="1.4"/>
-          <text x="718" y="73" text-anchor="middle" font-size="11.5" fill="currentColor">RMS · peak · variance</text>
-          <text x="718" y="88" text-anchor="middle" font-size="11.5" fill="currentColor">kurtosis</text>
-
-          <rect x="626" y="182" width="184" height="46" rx="2" fill="none" stroke="currentColor" stroke-width="1.4"/>
-          <text x="718" y="203" text-anchor="middle" font-size="11.5" fill="currentColor">Hann → FFT-128 real</text>
-          <text x="718" y="218" text-anchor="middle" font-size="11.5" fill="currentColor">dominant bin + 4 bands</text>
-
-          <!-- output -->
-          <rect x="836" y="118" width="96" height="44" rx="2" style="fill:var(--accent-soft)" stroke="currentColor" stroke-width="1.6"/>
-          <text x="884" y="139" text-anchor="middle" font-size="11.5" font-weight="600" fill="currentColor">Feature</text>
-          <text x="884" y="153" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.82">48 B</text>
-
-          <!-- straight arrows -->
-          <line x1="100" y1="140" x2="118" y2="140" stroke="currentColor" stroke-width="1.4" marker-end="url(#ar2)"/>
-          <line x1="228" y1="140" x2="246" y2="140" stroke="currentColor" stroke-width="1.4" marker-end="url(#ar2)"/>
-          <line x1="350" y1="140" x2="368" y2="140" stroke="currentColor" stroke-width="1.4" marker-end="url(#ar2)"/>
-          <line x1="484" y1="140" x2="502" y2="140" stroke="currentColor" stroke-width="1.4" marker-end="url(#ar2)"/>
-
-          <!-- fork -->
-          <polyline points="592,140 608,140 608,75 622,75" fill="none" stroke="currentColor" stroke-width="1.4" marker-end="url(#ar2)"/>
-          <polyline points="592,140 608,140 608,205 622,205" fill="none" stroke="currentColor" stroke-width="1.4" marker-end="url(#ar2)"/>
-
-          <!-- merge -->
-          <polyline points="810,75 824,75 824,140 832,140" fill="none" stroke="currentColor" stroke-width="1.4" marker-end="url(#ar2)"/>
-          <polyline points="810,205 824,205 824,140 832,140" fill="none" stroke="currentColor" stroke-width="1.4"/>
-
-          <!-- rate annotations -->
-          <text x="56" y="180" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.8">100 Sa/s</text>
-          <text x="56" y="193" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.8">3 axes</text>
-          <text x="300" y="180" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.8">100 Sa/s scalar</text>
-          <text x="884" y="180" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.8">1.56 frames/s</text>
-          <text x="884" y="193" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.8">every 640 ms</text>
-
-          <!-- headline reduction -->
-          <text x="470" y="268" text-anchor="middle" font-size="12" font-weight="600" fill="currentColor">64 : 1 data reduction, entirely in programmable logic</text>
-        </svg>
-      </div>
-      <figcaption>
-        <b>Figure 2 — The three axes collapse to a scalar before the FFT, not after.</b>
-        That single placement decision costs directional information and buys a threefold cut in FFT
-        resources plus a feature set invariant to how the sensor is mounted. The whole chain closes timing
-        at 50 MHz inside 25 of the device's 220 DSP48E1 slices.
-      </figcaption>
-    </figure>
-  </section>
-
-  <!-- ═════════════════ 4. PL INTEGRATION ═════════════════ -->
-  <section>
-    <div class="sec-head"><h2>PL integration — Vivado block design &amp; AXI</h2><span class="sec-no">04</span></div>
-
-    <p class="lede">
-      The HLS core doesn't reach the processing system on its own. It's packaged as an IP-XACT component and
-      wired into a Vivado block design through three hand-written AXI4-Lite peripherals, so custom RTL sits on
-      the bus exactly like a vendor IP block.
-    </p>
-
-    <figure>
-      <div class="fig-frame">
-        <svg viewBox="0 0 900 340" role="img" width="900"
-             aria-label="Vivado block design: the Zynq PS7's general-purpose AXI master feeds an AXI interconnect, which drops an AXI4-Lite tap to each of three custom peripherals — mmio_axis_bridge, zmpio_dsp_ctrl and zmpio_doorbell. Only the first two also sit on an AXI4-Stream path that runs through the HLS dsp_core between them; the doorbell carries no data, only a wakeup. All three are packaged as IP-XACT components.">
-          <defs>
-            <marker id="arpl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-              <polygon points="0,1 10,5 0,9" fill="currentColor"/>
-            </marker>
-          </defs>
-
-          <!-- PS7 -->
-          <rect x="20" y="20" width="140" height="52" rx="3" fill="none" stroke="currentColor" stroke-width="1.8"/>
-          <text x="90" y="42" text-anchor="middle" font-size="13" font-weight="600" fill="currentColor">Zynq PS7</text>
-          <text x="90" y="58" text-anchor="middle" font-size="11" fill="currentColor" opacity="0.72">GP AXI master</text>
-
-          <!-- interconnect -->
-          <rect x="200" y="20" width="660" height="52" rx="3" fill="none" stroke="currentColor" stroke-width="1.4"/>
-          <text x="530" y="42" text-anchor="middle" font-size="13" font-weight="600" fill="currentColor">AXI Interconnect</text>
-          <text x="530" y="58" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.72">shared AXI4-Lite address space</text>
-
-          <line x1="160" y1="46" x2="196" y2="46" stroke="currentColor" stroke-width="1.4" marker-end="url(#arpl)"/>
-
-          <!-- packaged-IP group -->
-          <rect x="195" y="140" width="670" height="192" rx="3" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="5 4" opacity="0.55"/>
-          <text x="205" y="132" font-size="10" fill="currentColor" opacity="0.65">hand-written RTL, packaged as IP-XACT</text>
-
-          <!-- peripherals -->
-          <rect x="210" y="150" width="170" height="56" rx="2" fill="none" stroke="currentColor" stroke-width="1.4"/>
-          <text x="295" y="172" text-anchor="middle" font-size="12.5" font-weight="600" fill="currentColor">mmio_axis_bridge</text>
-          <text x="295" y="189" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.75">AXI4-Lite → AXI4-Stream</text>
-
-          <rect x="420" y="150" width="190" height="56" rx="2" fill="none" stroke="currentColor" stroke-width="1.4"/>
-          <text x="515" y="172" text-anchor="middle" font-size="12.5" font-weight="600" fill="currentColor">zmpio_dsp_ctrl</text>
-          <text x="515" y="189" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.75">control + 64-entry FIFO</text>
-
-          <rect x="650" y="150" width="170" height="56" rx="2" fill="none" stroke="currentColor" stroke-width="1.4"/>
-          <text x="735" y="172" text-anchor="middle" font-size="12.5" font-weight="600" fill="currentColor">zmpio_doorbell</text>
-          <text x="735" y="189" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.75">AXI4-Lite only</text>
-          <text x="735" y="222" text-anchor="middle" font-size="10" fill="currentColor" opacity="0.6">no AXI-Stream port</text>
-
-          <!-- interconnect -> peripherals -->
-          <line x1="295" y1="72" x2="295" y2="146" stroke="currentColor" stroke-width="1.4" marker-end="url(#arpl)"/>
-          <line x1="515" y1="72" x2="515" y2="146" stroke="currentColor" stroke-width="1.4" marker-end="url(#arpl)"/>
-          <line x1="735" y1="72" x2="735" y2="146" stroke="currentColor" stroke-width="1.4" marker-end="url(#arpl)"/>
-          <text x="524" y="112" font-size="10" fill="currentColor" opacity="0.8">AXI4-Lite</text>
-
-          <!-- dsp_core -->
-          <rect x="300" y="272" width="220" height="56" rx="2" style="fill:var(--accent-soft)" stroke="currentColor" stroke-width="1.6"/>
-          <text x="410" y="294" text-anchor="middle" font-size="12.5" font-weight="600" fill="currentColor">dsp_core (Vitis HLS)</text>
-          <text x="410" y="310" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.82">AXI4-Stream master + slave</text>
-
-          <!-- stream path through the core -->
-          <line x1="335" y1="206" x2="335" y2="268" stroke="currentColor" stroke-width="1.4" marker-end="url(#arpl)"/>
-          <text x="345" y="240" font-size="10" fill="currentColor" opacity="0.8">AXI4-Stream</text>
-          <text x="345" y="253" font-size="9" fill="currentColor" opacity="0.65">sample_frame</text>
-
-          <line x1="485" y1="272" x2="485" y2="210" stroke="currentColor" stroke-width="1.4" marker-end="url(#arpl)"/>
-          <text x="495" y="240" font-size="10" fill="currentColor" opacity="0.8">AXI4-Stream</text>
-          <text x="495" y="253" font-size="9" fill="currentColor" opacity="0.65">feature_axis</text>
-        </svg>
-      </div>
-      <figcaption>
-        <b>Figure 3 — Two peripherals carry the data stream; a third carries only a wakeup.</b>
-        <code>mmio_axis_bridge</code> exists because bare-metal CPU1 has no DMA engine, so it turns AXI4-Lite
-        register writes into AXI4-Stream beats for the core; <code>zmpio_dsp_ctrl</code> catches the core's
-        output in a 64-entry FIFO and owns a reset line scoped to the DSP path alone, leaving I²C's shared
-        reset network untouched. <code>zmpio_doorbell</code> sits on the same bus but carries no data — just a
-        CPU1→CPU0 wakeup.
-      </figcaption>
-    </figure>
-  </section>
-
-  <!-- ═════════════════ 5. IPC ═════════════════ -->
-  <section>
-    <div class="sec-head"><h2>Cross-core IPC</h2><span class="sec-no">05</span></div>
-
-    <p class="lede">
-      Two Cortex-A9 cores running different operating systems share a ring in uncached DDR with no lock and
-      no hardware mailbox. Correctness rests entirely on write ordering and on a single-producer,
-      single-consumer discipline that the design enforces rather than assumes.
-    </p>
-
-    <figure>
-      <div class="fig-frame">
-        <svg viewBox="0 0 880 306" role="img" width="880"
-             aria-label="Single-producer single-consumer ring: CPU1 writes the payload into the slot at head, issues a data memory barrier, then advances head. Linux reads head, issues a barrier, then reads the payload at tail. If the next head would equal tail the producer refuses to write rather than overwriting unread data.">
-          <defs>
-            <marker id="ar3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-              <polygon points="0,1 10,5 0,9" fill="currentColor"/>
-            </marker>
-          </defs>
-
-          <!-- producer -->
-          <rect x="30" y="14" width="212" height="56" rx="3" fill="none" stroke="currentColor" stroke-width="1.6"/>
-          <text x="136" y="36" text-anchor="middle" font-size="12.5" font-weight="600" fill="currentColor">CPU1 — producer</text>
-          <text x="136" y="55" text-anchor="middle" font-size="11" fill="currentColor" opacity="0.78">1. payload → 2. dmb → 3. head++</text>
-
-          <!-- ring cells -->
-          <rect x="120" y="112" width="62" height="58" fill="none" stroke="currentColor" stroke-width="1.2"/>
-          <rect x="182" y="112" width="62" height="58" fill="none" stroke="currentColor" stroke-width="1.2"/>
-          <rect x="244" y="112" width="62" height="58" style="fill:var(--accent-soft)" stroke="currentColor" stroke-width="1.2"/>
-          <rect x="306" y="112" width="62" height="58" style="fill:var(--accent-soft)" stroke="currentColor" stroke-width="1.2"/>
-          <rect x="368" y="112" width="62" height="58" style="fill:var(--accent-soft)" stroke="currentColor" stroke-width="1.2"/>
-          <rect x="430" y="112" width="62" height="58" fill="none" stroke="currentColor" stroke-width="1.2"/>
-          <rect x="492" y="112" width="62" height="58" fill="none" stroke="currentColor" stroke-width="1.2"/>
-          <rect x="554" y="112" width="62" height="58" fill="none" stroke="currentColor" stroke-width="1.2"/>
-          <rect x="616" y="112" width="62" height="58" fill="none" stroke="currentColor" stroke-width="1.2"/>
-          <text x="399" y="147" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.85">unread</text>
-
-          <!-- head marker -->
-          <polygon points="461,104 455,92 467,92" fill="currentColor"/>
-          <text x="461" y="86" text-anchor="middle" font-size="11.5" font-weight="600" fill="currentColor">head</text>
-
-          <!-- tail marker -->
-          <polygon points="275,178 269,190 281,190" fill="currentColor"/>
-          <text x="275" y="204" text-anchor="middle" font-size="11.5" font-weight="600" fill="currentColor">tail</text>
-
-          <!-- producer arrow to head -->
-          <polyline points="242,42 461,42 461,100" fill="none" stroke="currentColor" stroke-width="1.5" marker-end="url(#ar3)"/>
-          <text x="352" y="35" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.8">writes at head</text>
-
-          <!-- consumer -->
-          <rect x="560" y="232" width="212" height="56" rx="3" fill="none" stroke="currentColor" stroke-width="1.6"/>
-          <text x="666" y="254" text-anchor="middle" font-size="12.5" font-weight="600" fill="currentColor">Linux — sole consumer</text>
-          <text x="666" y="273" text-anchor="middle" font-size="11" fill="currentColor" opacity="0.78">reads head → dmb → payload</text>
-
-          <!-- consumer arrow to tail -->
-          <polyline points="560,260 275,260 275,194" fill="none" stroke="currentColor" stroke-width="1.5" marker-end="url(#ar3)"/>
-          <text x="418" y="253" text-anchor="middle" font-size="10.5" fill="currentColor" opacity="0.8">reads at tail</text>
-
-          <!-- invariant -->
-          <text x="700" y="130" font-size="11" font-weight="600" fill="currentColor">Invariant</text>
-          <text x="700" y="147" font-size="10.5" fill="currentColor" opacity="0.82">next_head == tail</text>
-          <text x="700" y="161" font-size="10.5" fill="currentColor" opacity="0.82">→ refuse the write,</text>
-          <text x="700" y="175" font-size="10.5" fill="currentColor" opacity="0.82">never overwrite</text>
-        </svg>
-      </div>
-      <figcaption>
-        <b>Figure 4 — The barrier, not a lock, is what makes this safe.</b>
-        Because the producer commits the payload before it publishes the index, a consumer that observes a
-        new <code>head</code> is guaranteed to observe a complete payload. A full ring is refused rather
-        than overwritten, so back-pressure surfaces as a counted drop instead of silent corruption.
-      </figcaption>
-    </figure>
-
-    <div class="tbl-wrap">
-      <table>
-        <caption>Address map</caption>
-        <thead>
-          <tr><th>Region</th><th class="mono">Base</th><th>Size / shape</th><th>Owner</th></tr>
-        </thead>
-        <tbody>
-          <tr><td>Linux (PetaLinux)</td><td class="mono">0x0000_0000</td><td>up to <code>0x17FF_FFFF</code>, cacheable</td><td>CPU0</td></tr>
-          <tr><td>CPU1 firmware</td><td class="mono">0x1800_0000</td><td>16 MiB, cacheable</td><td>CPU1</td></tr>
-          <tr><td>ABI v2 data ring</td><td class="mono">0x1900_0000</td><td>256 slots × 256 B, uncached</td><td>CPU1 writes, Linux reads</td></tr>
-          <tr><td>ABI v2 command ring</td><td class="mono">0x1902_0000</td><td>256 slots × 256 B, uncached</td><td>Linux writes, CPU1 reads</td></tr>
-          <tr><td>ABI v3 control block</td><td class="mono">0x1904_0000</td><td>52 B, per-field ownership</td><td>both, single writer per field</td></tr>
-          <tr><td>ABI v3 cmd / resp rings</td><td class="mono">0x1904_1000</td><td>16 × 84 B / 16 × 88 B, CRC32 per slot</td><td>CPU0 → CPU1 → CPU0</td></tr>
-          <tr><td>PL doorbell registers</td><td class="mono">0x4000_2000</td><td>AXI4-Lite, GIC SPI 62 / 63</td><td>PL → both cores</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </section>
-
-  <!-- ═════════════════ 5. DECISIONS ═════════════════ -->
-  <section>
-    <div class="sec-head"><h2>Engineering decisions</h2><span class="sec-no">06</span></div>
-
-    <div class="decisions">
-
-      <div class="decision">
-        <div class="d-head"><h3>One C++ source, two synthesis targets</h3><span class="d-tag">verifiability</span></div>
-        <p>
-          The DSP algorithm compiles on a PC to generate golden vectors and is synthesized by Vitis HLS into
-          the RTL that runs in fabric. Both must agree bit for bit.
-        </p>
-        <p class="tradeoff">
-          <b>Cost:</b> the algorithm may not allocate, may not do I/O, and may not touch <code>&lt;chrono&gt;</code>
-          — every design choice inside it is constrained by HLS synthesizability.
-          <b>Return:</b> the entire signal chain regresses offline with no board attached, and a fabric
-          result that diverges from the host model is a provable defect rather than a judgement call.
-        </p>
-      </div>
-
-      <div class="decision">
-        <div class="d-head"><h3>Wire layouts are pinned at compile time</h3><span class="d-tag">interface safety</span></div>
-        <p>
-          Every struct crossing a core boundary carries a layout hash, and each field is guarded by an
-          <code>offsetof()</code> <code>_Static_assert</code> in the firmware.
-        </p>
-        <p class="tradeoff">
-          <b>Cost:</b> a deliberate field change means regenerating the hash and re-verifying the affected
-          channel. <b>Return:</b> an accidental field reorder breaks the build loudly instead of producing
-          plausible-looking garbage on a board that is hard to instrument.
-        </p>
-      </div>
-
-      <div class="decision">
-        <div class="d-head"><h3>The stream path never blocks, it drops and counts</h3><span class="d-tag">real-time</span></div>
-        <p>
-          Feature sends use a bounded wait. When the ring is full the frame is discarded and a counter
-          increments; the task returns to servicing fabric on time.
-        </p>
-        <p class="tradeoff">
-          <b>Cost:</b> the Linux side can miss frames and must reason about gaps.
-          <b>Return:</b> a late result task overflows the 64-deep FIFO in fabric, which is a real hardware
-          failure. A missing frame in a log is not. The design trades the cheap failure for the expensive one.
-        </p>
-      </div>
-
-      <div class="decision">
-        <div class="d-head"><h3>Sequence numbers are assigned only on a successful send</h3><span class="d-tag">observability</span></div>
-        <p>
-          A dropped frame does not consume a stream sequence number.
-        </p>
-        <p class="tradeoff">
-          <b>Return:</b> a gap in the sequence can then mean exactly one thing — lost in transit after CPU1
-          sent it — and never "CPU1 failed to send." Two failure modes that would otherwise be
-          indistinguishable in a capture become separable without any extra telemetry.
-        </p>
-      </div>
-
-      <div class="decision">
-        <div class="d-head"><h3>DSP resources are capped on purpose</h3><span class="d-tag">area / throughput</span></div>
-        <p>
-          An HLS allocation pragma limits the design to one instance of each expensive operator in five
-          places, holding it to 25 of 220 DSP48E1 slices.
-        </p>
-        <p class="tradeoff">
-          <b>Cost:</b> throughput per frame drops substantially. <b>Return:</b> the frame budget is
-          32,000,000 cycles and a frame needs tens of thousands, so three orders of magnitude of headroom
-          were spent to leave the rest of the device free.
-        </p>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- ═════════════════ 6. STACK ═════════════════ -->
-  <section>
-    <div class="sec-head"><h2>Technology stack</h2><span class="sec-no">07</span></div>
-    <div class="tbl-wrap">
-      <table>
-        <thead><tr><th>Layer</th><th>Built with</th><th>Notable detail</th></tr></thead>
-        <tbody>
-          <tr>
-            <td>Programmable logic</td>
-            <td>Vitis HLS 2023.2, Verilog, Vivado, IP-XACT</td>
-            <td class="mono">50 MHz · 25/220 DSP48E1</td>
-          </tr>
-          <tr>
-            <td>RTOS application</td>
-            <td>FreeRTOS on Cortex-A9, C</td>
-            <td class="mono">4 tasks · 100 Hz tick · 64 KiB heap</td>
-          </tr>
-          <tr>
-            <td>Sensor + storage</td>
-            <td>I²C polled driver, SD-SPI, FatFs</td>
-            <td class="mono">CRC32 per record · f_sync ≤ 1 s</td>
-          </tr>
-          <tr>
-            <td>Cross-core IPC</td>
-            <td>Uncached shared DDR, <code>dmb</code> ordering</td>
-            <td class="mono">ABI v2 + ABI v3, hash-pinned</td>
-          </tr>
-          <tr>
-            <td>Embedded Linux</td>
-            <td>PetaLinux 2023.2, device tree, UIO, sysvinit</td>
-            <td class="mono">no custom kernel driver</td>
-          </tr>
-          <tr>
-            <td>Linux user space</td>
-            <td>C, CMake cross-build — libzmpio / zmpiod / zmpioctl</td>
-            <td class="mono">group-gated control socket</td>
-          </tr>
-          <tr>
-            <td>Networking</td>
-            <td>GEM0 + RTL8201F PHY, lwIP</td>
-            <td class="mono">DHCP · ICMP · DNS</td>
-          </tr>
-          <tr>
-            <td>Verification</td>
-            <td>Host DSP model, golden vectors, Python tooling</td>
-            <td class="mono">fault injection · soak · cold boot</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </section>
-
-  <!-- ═════════════════ 7. EVIDENCE ═════════════════ -->
-  <section>
-    <div class="sec-head"><h2>What was demonstrated on hardware</h2><span class="sec-no">08</span></div>
-    <ul class="plain">
-      <li><b>10,000 of 10,000 doorbell interrupts</b> delivered with no lost wakeup; spurious interrupts produced no phantom events, and an interrupt storm did not crash the system.</li>
-      <li><b>4 of 4 fault-injection gates</b> passed, including resetting the DSP core mid-run and forcing the fabric FIFO full — in both cases the I²C, SD and scheduler paths kept running and the backlog drained.</li>
-      <li><b>One-hour IPC soak</b> and roughly <b>25 minutes of continuous feature streaming</b> to Linux with zero drops, zero gaps and zero mount failures.</li>
-      <li><b>Ethernet to the open Internet</b> — DHCP bind, DNS resolution and ICMP replies from a public host.</li>
-      <li><b>Two stack overflows located by direct observation, not inference:</b> halting CPU1 over JTAG put the program counter inside the overflow hook, and reading the task-name bytes at the hook's argument pointer named the offending task.</li>
-      <li><b>A cross-core interrupt race root-caused:</b> the Linux core's GIC distributor initialization ran after CPU1 had already enabled its interrupt, silently clearing the enable bit. The fix makes CPU1 wait on the distributor control register and re-arm under a watchdog.</li>
-    </ul>
-
-    <p class="lede">
-      By the project's own rule on evidence, V3 is <b>not</b> declared complete. It is released at the level
-      that has been proven, and the gap is documented rather than left for a reader to discover.
-    </p>
-  </section>
-
-  <footer>
-    <span>ZMPIO Guard V3 · v1.0.0 · MIT</span>
-    <span>Tran Bao Tu · baotutran12@gmail.com</span>
-  </footer>
-
-</div>
-</body>
+  </body>
 </html>
